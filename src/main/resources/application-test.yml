@@ -1,0 +1,18 @@
+
+
+spring:
+  redis:
+    host: localhost
+    port: 6379
+    database: 0
+    password:
+    jedis:
+      pool:
+        max-active: 8
+        min-idle: 0
+    timeout: 30s
+
+
+formula:
+  variable-alias:
+    huobi_btc: huobipro_btc_usdt

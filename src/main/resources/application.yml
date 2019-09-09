@@ -1,0 +1,8 @@
+
+server:
+  port: 8120
+
+spring:
+  profiles:
+    active: prod
+
