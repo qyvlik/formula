@@ -12,7 +12,3 @@ spring:
         min-idle: 0
     timeout: 30s
 
-
-formula:
-  variable-alias:
-    huobi_btc: huobipro_btc_usdt

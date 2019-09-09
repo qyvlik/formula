@@ -6,3 +6,11 @@ spring:
   profiles:
     active: prod
 
+
+formula:
+  variable-alias:
+    usdcny: usd_in_cny
+  access-tokens:
+    - ad82c6ae-f7a3-486b-b933-aa19104d8142
+    - a867fec8-cadd-4d96-91bc-3f4a85878685
+    - 64905f67-0507-4053-a918-9e691252218f

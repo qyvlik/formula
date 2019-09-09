@@ -1,6 +1,7 @@
 package io.github.qyvlik.formula.modules.api;
 
 import io.github.qyvlik.formula.common.base.ResponseObject;
+import io.github.qyvlik.formula.common.properties.FormulaProperties;
 import io.github.qyvlik.formula.modules.api.entity.DeleteVariablesRequest;
 import io.github.qyvlik.formula.modules.api.entity.UpdateVariablesRequest;
 import io.github.qyvlik.formula.modules.formula.entity.FormulaResult;
@@ -12,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
 import java.util.Set;
 
 @RestController
@@ -22,6 +24,8 @@ public class FormulaController {
     private FormulaVariableService formulaVariableService;
     @Autowired
     private FormulaCalculator formulaCalculator;
+    @Autowired
+    private FormulaProperties formulaProperties;
 
     @RequestMapping(value = "api/v1/formula/variables/update", method = RequestMethod.POST)
     public ResponseObject<String> updateVariables(@RequestBody UpdateVariablesRequest request) {
@@ -68,6 +72,16 @@ public class FormulaController {
         return new ResponseObject<>(formulaVariableService.getAllVariableNames());
     }
 
+    @RequestMapping(value = "api/v1/formula/variables/alias", method = RequestMethod.GET)
+    public ResponseObject<Map<String, String>> getFormulaVariableAlias() {
+        try {
+            return new ResponseObject<>(formulaProperties.getVariableAlias());
+        } catch (Exception e) {
+            logger.debug("getFormulaVariableAlias failure error:{}", e.getMessage());
+            return new ResponseObject<>(20500, e.getMessage());
+        }
+    }
+
     @RequestMapping(value = "api/v1/formula/variable/{variableName}", method = RequestMethod.GET)
     public ResponseObject<FormulaVariable> getFormulaVariable(@PathVariable String variableName) {
         try {
@@ -78,6 +92,7 @@ public class FormulaController {
             return new ResponseObject<>(20500, e.getMessage());
         }
     }
+
 
     @RequestMapping(value = "api/v1/formula/eval", method = RequestMethod.GET)
     public ResponseObject<FormulaResult> calculate(@RequestParam String formula) {
