@@ -5,6 +5,26 @@ Update variable, and use javascript engine calculate the result.
 For example, regularly update the variables `usd_in_cny` and `huobipro_usdt_btc`, 
 and calculate `huobipro_usdt_btc*usd_in_cny`, you can get the bitcoin CNY price.
 
+## docker
+
+[qyvlik/formula](https://hub.docker.com/r/qyvlik/formula)
+
+The follow is `docker-compose.yaml` template file.
+
+```yaml
+version: '2.2'
+services:
+  redis:
+    image: redis:4
+  formula:
+    image: qyvlik/formula:latest
+    ports:
+      - '8120:8120'
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - SPRING_REDIS_HOST=redis
+```
+
 ## api
 
 ### update variables
