@@ -9,7 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.script.ScriptEngine;
-import javax.script.ScriptException;
 import javax.script.SimpleScriptContext;
 import java.util.List;
 import java.util.Map;
@@ -47,14 +46,11 @@ public class FormulaExecutor {
 
             formulaResult.setResult(result.toString());
 
-        } catch (ScriptException e) {
+        } catch (Exception e) {
             logger.debug("eval fail : error:{}", e.getMessage());
 
-            throw new RuntimeException(e.getMessage());
-        } catch (Exception e) {
-            logger.error("eval fail : other error:{}", e.getMessage());
+            throw new RuntimeException(e);
         } finally {
-
             clearEngineBindings(engine, contextMap);
 
             logger.debug("eval formula:{} {} time:{} ms",
@@ -78,7 +74,6 @@ public class FormulaExecutor {
 
         for (String variable : variableNames) {
             if (whiteVariableNames.contains(variable)) {
-                logger.debug("white variable:{}", variable);
                 continue;
             }
             engineBindings.remove(variable);
@@ -93,7 +88,9 @@ public class FormulaExecutor {
     private void clearEngineBindings(ScriptEngine engine,
                                      Map<String, FormulaVariable> contextMap) {
         try {
-            ScriptObjectMirror engineBindings = (ScriptObjectMirror) engine.getBindings(SimpleScriptContext.ENGINE_SCOPE);
+            ScriptObjectMirror engineBindings = (ScriptObjectMirror)
+                    engine.getBindings(SimpleScriptContext.ENGINE_SCOPE);
+
             for (Map.Entry<String, FormulaVariable> entry : contextMap.entrySet()) {
                 engineBindings.remove(entry.getKey());
             }

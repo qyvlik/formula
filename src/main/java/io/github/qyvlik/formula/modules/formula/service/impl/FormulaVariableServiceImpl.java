@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import io.github.qyvlik.formula.modules.formula.entity.FormulaVariable;
+import io.github.qyvlik.formula.modules.formula.service.FormulaVariableService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -12,8 +13,8 @@ import org.springframework.stereotype.Service;
 import java.util.Map;
 import java.util.Set;
 
-@Service
-public class FormulaVariableService {
+@Service("formulaVariableService")
+public class FormulaVariableServiceImpl implements FormulaVariableService {
 
     public final String FORMULA_VARIABLE_PREFIX = "formula.var:";
     public final String FORMULA_VARIABLE_NAMES = "formula.names";
@@ -21,6 +22,7 @@ public class FormulaVariableService {
     @Autowired
     private StringRedisTemplate redisTemplate;
 
+    @Override
     public Map<String, FormulaVariable> getFormulaVariableMap(Set<String> variableNames) {
         Set<String> fullVariableNames = Sets.newHashSet();
         for (String name : variableNames) {
@@ -52,11 +54,13 @@ public class FormulaVariableService {
         return variableMap;
     }
 
+    @Override
     public FormulaVariable getFormulaVariable(String variableName) {
         String value = redisTemplate.opsForValue().get(FORMULA_VARIABLE_PREFIX + variableName);
         return JSON.parseObject(value).toJavaObject(FormulaVariable.class);
     }
 
+    @Override
     public void updateFormulaVariable(FormulaVariable formulaVariable) {
         formulaVariable.setName(formulaVariable.getName().toLowerCase());                   // to lowercase
 
@@ -65,6 +69,7 @@ public class FormulaVariableService {
         redisTemplate.opsForSet().add(FORMULA_VARIABLE_NAMES, formulaVariable.getName());
     }
 
+    @Override
     public void deleteFormulaVariable(String variableName) {
         variableName = variableName.toLowerCase();
 
@@ -73,6 +78,7 @@ public class FormulaVariableService {
     }
 
     // todo use scan
+    @Override
     public Set<String> getAllVariableNames() {
         return redisTemplate.opsForSet().members(FORMULA_VARIABLE_NAMES);
     }

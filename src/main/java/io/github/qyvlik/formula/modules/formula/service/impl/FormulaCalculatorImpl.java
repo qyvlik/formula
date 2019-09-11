@@ -5,6 +5,7 @@ import com.google.common.collect.Sets;
 import io.github.qyvlik.formula.modules.formula.entity.FormulaResult;
 import io.github.qyvlik.formula.modules.formula.entity.FormulaVariable;
 import io.github.qyvlik.formula.modules.formula.service.FormulaCalculator;
+import io.github.qyvlik.formula.modules.formula.service.FormulaVariableService;
 import jdk.nashorn.api.scripting.NashornScriptEngineFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -21,10 +22,11 @@ public class FormulaCalculatorImpl implements FormulaCalculator {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final NashornScriptEngineFactory factory = new NashornScriptEngineFactory();
+    private final ThreadLocal<ScriptEngine> engineThreadLocal = new ThreadLocal<>();
+
     private Map<String, String> aliasMap;
     private FormulaVariableService formulaVariableService;
 
-    private ThreadLocal<ScriptEngine> scriptEngineThreadLocal = new ThreadLocal<>();
 
     public Map<String, String> getAliasMap() {
         return aliasMap;
@@ -43,12 +45,12 @@ public class FormulaCalculatorImpl implements FormulaCalculator {
     }
 
     private ScriptEngine createScriptEngine() {
-        if (scriptEngineThreadLocal.get() == null) {
-            ScriptEngine engine = factory.getScriptEngine(new String[]{"-strict", "--no-java", "--no-syntax-extensions"});
-            scriptEngineThreadLocal.set(engine);
-            logger.debug("createScriptEngine: engine:{}", engine.hashCode());
+        if (engineThreadLocal.get() == null) {
+            ScriptEngine engine = factory.getScriptEngine(
+                    new String[]{"-strict", "--no-java", "--no-syntax-extensions"});
+            engineThreadLocal.set(engine);
         }
-        return scriptEngineThreadLocal.get();
+        return engineThreadLocal.get();
     }
 
     @Override
@@ -75,7 +77,6 @@ public class FormulaCalculatorImpl implements FormulaCalculator {
         stopWatch.stop();
 
         stopWatch.start("getScriptEngine");
-//        ScriptEngine engine = factory.getScriptEngine(new String[]{"-strict", "--no-java", "--no-syntax-extensions"});
         ScriptEngine engine = createScriptEngine();
         stopWatch.stop();
 
@@ -89,8 +90,8 @@ public class FormulaCalculatorImpl implements FormulaCalculator {
         FormulaResult formulaResult = executor.eval();
         stopWatch.stop();
 
-        if (stopWatch.getTotalTimeMillis() > 1000) {
-            logger.info("calculate : formula:{} {}", formula, stopWatch.prettyPrint());
+        if (stopWatch.getTotalTimeMillis() > 100) {
+            logger.debug("calculate : formula:{} {}", formula, stopWatch.prettyPrint());
         }
 
         formulaResult.setCost(stopWatch.getTotalTimeMillis());
@@ -105,17 +106,19 @@ public class FormulaCalculatorImpl implements FormulaCalculator {
             if (StringUtils.isBlank(variableName)) {
                 continue;
             }
-
             if (variableName.startsWith("Math.")) {
                 continue;
             }
-            if (StringUtils.isNumeric(variableName)) {
+            if (isNumeric(variableName)) {
                 continue;
             }
-
             names.add(variableName);
         }
         return names;
+    }
+
+    private boolean isNumeric(String strNum) {
+        return strNum.matches("-?\\d+(\\.\\d+)?");
     }
 
     private String replaceVariable(String formulaScript, Map<String, String> variableAliasMap) {
@@ -178,5 +181,4 @@ public class FormulaCalculatorImpl implements FormulaCalculator {
             }
         }
     }
-
 }

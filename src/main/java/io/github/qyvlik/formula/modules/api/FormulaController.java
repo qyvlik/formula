@@ -7,7 +7,7 @@ import io.github.qyvlik.formula.modules.api.entity.UpdateVariablesRequest;
 import io.github.qyvlik.formula.modules.formula.entity.FormulaResult;
 import io.github.qyvlik.formula.modules.formula.entity.FormulaVariable;
 import io.github.qyvlik.formula.modules.formula.service.FormulaCalculator;
-import io.github.qyvlik.formula.modules.formula.service.impl.FormulaVariableService;
+import io.github.qyvlik.formula.modules.formula.service.impl.FormulaVariableServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +21,7 @@ public class FormulaController {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    private FormulaVariableService formulaVariableService;
+    private FormulaVariableServiceImpl formulaVariableService;
     @Autowired
     private FormulaCalculator formulaCalculator;
     @Autowired
@@ -114,6 +114,4 @@ public class FormulaController {
             return new ResponseObject<>(20500, e.getMessage());
         }
     }
-
-
 }
