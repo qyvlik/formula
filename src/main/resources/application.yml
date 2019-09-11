@@ -1,6 +1,8 @@
 
 server:
   port: 8120
+#  tomcat:
+#    max-threads: 256
 
 spring:
   profiles:

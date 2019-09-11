@@ -38,10 +38,11 @@ public class FormulaExecutor {
         formulaResult.setContext(contextMap);
         formulaResult.setTs(startTime);
 
-        engineRemoveAndSetBindings(engine, contextMap);
-
         Object result = null;
         try {
+
+            engineRemoveAndSetBindings(engine, contextMap);
+
             result = engine.eval(formula);
 
             formulaResult.setResult(result.toString());
@@ -53,6 +54,9 @@ public class FormulaExecutor {
         } catch (Exception e) {
             logger.error("eval fail : other error:{}", e.getMessage());
         } finally {
+
+            clearEngineBindings(engine, contextMap);
+
             logger.debug("eval formula:{} {} time:{} ms",
                     formula, result, System.currentTimeMillis() - startTime);
         }
@@ -84,5 +88,18 @@ public class FormulaExecutor {
             FormulaVariable variable = entry.getValue();
             engineBindings.put(entry.getKey(), variable.getValue().doubleValue());
         }
+    }
+
+    private void clearEngineBindings(ScriptEngine engine,
+                                     Map<String, FormulaVariable> contextMap) {
+        try {
+            ScriptObjectMirror engineBindings = (ScriptObjectMirror) engine.getBindings(SimpleScriptContext.ENGINE_SCOPE);
+            for (Map.Entry<String, FormulaVariable> entry : contextMap.entrySet()) {
+                engineBindings.remove(entry.getKey());
+            }
+        } catch (Exception e) {
+            logger.error("clearEngineBindings failure : {}", e.getMessage());
+        }
+
     }
 }
