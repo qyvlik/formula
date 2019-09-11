@@ -9,7 +9,6 @@ public class FormulaResult implements Serializable {
     private String formula;
     private String result;
     private Map<String, FormulaVariable> context;
-    private Map<String, FormulaVariable> expired;
 
     public FormulaResult() {
 
@@ -53,14 +52,6 @@ public class FormulaResult implements Serializable {
 
     public void setTs(Long ts) {
         this.ts = ts;
-    }
-
-    public Map<String, FormulaVariable> getExpired() {
-        return expired;
-    }
-
-    public void setExpired(Map<String, FormulaVariable> expired) {
-        this.expired = expired;
     }
 
     @Override

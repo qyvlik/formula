@@ -37,7 +37,6 @@ public class FormulaExecutor {
         FormulaResult formulaResult = new FormulaResult();
         formulaResult.setFormula(formula);
         formulaResult.setContext(contextMap);
-        formulaResult.setExpired(Maps.newHashMap());
         formulaResult.setTs(startTime);
 
         engineRemoveAndSetBindings(engine, contextMap);
