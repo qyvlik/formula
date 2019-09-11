@@ -98,7 +98,7 @@ public class FormulaController {
         try {
             FormulaResult formulaResult = formulaCalculator.calculate(formula);
 
-            return new ResponseObject<>(formulaResult.getFormula());
+            return new ResponseObject<>(formulaResult.getResult());
         } catch (Exception e) {
             return new ResponseObject<>(20500, e.getMessage());
         }
