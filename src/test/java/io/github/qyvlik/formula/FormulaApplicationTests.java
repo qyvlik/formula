@@ -452,4 +452,46 @@ public class FormulaApplicationTests {
         logger.info("formulaResult:{}", formulaResult);
     }
 
+    @Test
+    public void test009_black_keyword() throws Exception {
+        String evalResponseString = this.mockMvc.perform(
+                get("/api/v1/formula/debug?formula=while(1);")
+        ).andExpect(status().isOk())
+                .andExpect(content().contentType("application/json;charset=UTF-8"))
+                .andReturn().getResponse().getContentAsString();
+
+        ResponseObject evalResponseObj = JSON.parseObject(evalResponseString)
+                .toJavaObject(ResponseObject.class);
+        Assert.assertTrue(evalResponseObj.getError() != null);
+        Assert.assertTrue(evalResponseObj.getError().getMessage().contains("black keyword"));
+    }
+
+    @Test
+    public void test010_eval_quit() throws Exception {
+        String evalResponseString = this.mockMvc.perform(
+                get("/api/v1/formula/debug?formula=quit()")
+        ).andExpect(status().isOk())
+                .andExpect(content().contentType("application/json;charset=UTF-8"))
+                .andReturn().getResponse().getContentAsString();
+
+        ResponseObject evalResponseObj = JSON.parseObject(evalResponseString)
+                .toJavaObject(ResponseObject.class);
+        Assert.assertTrue(evalResponseObj.getError() != null);
+        Assert.assertTrue(evalResponseObj.getError().getMessage().contains("formula contains black keyword: `quit`"));
+    }
+
+    @Test
+    public void test011_eval_exit() throws Exception {
+        String evalResponseString = this.mockMvc.perform(
+                get("/api/v1/formula/debug?formula=exit()")
+        ).andExpect(status().isOk())
+                .andExpect(content().contentType("application/json;charset=UTF-8"))
+                .andReturn().getResponse().getContentAsString();
+
+        ResponseObject evalResponseObj = JSON.parseObject(evalResponseString)
+                .toJavaObject(ResponseObject.class);
+        Assert.assertTrue(evalResponseObj.getError() != null);
+        Assert.assertTrue(evalResponseObj.getError().getMessage().contains("formula contains black keyword: `exit`"));
+    }
+
 }
