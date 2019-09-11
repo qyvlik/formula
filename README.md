@@ -168,6 +168,27 @@ curl -X GET \
   -H 'cache-control: no-cache'
 ```
 
+```json
+{
+  "result": "72318.731056"
+}
+```
+
+Or use `debug` for the formula result detail.
+
+
+```bash
+curl -X GET \
+  'http://localhost:8120/api/v1/formula/debug?formula=huobipro_usdt_btc%2Ausd_in_cny' \
+  -H 'Accept: */*' \
+  -H 'Accept-Encoding: gzip, deflate' \
+  -H 'Cache-Control: no-cache' \
+  -H 'Connection: keep-alive' \
+  -H 'Host: localhost:8120' \
+  -H 'User-Agent: PostmanRuntime/7.16.3' \
+  -H 'cache-control: no-cache'
+```
+
 response
 
 ```json
