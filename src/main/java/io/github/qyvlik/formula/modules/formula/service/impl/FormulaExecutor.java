@@ -1,7 +1,6 @@
 package io.github.qyvlik.formula.modules.formula.service.impl;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import io.github.qyvlik.formula.modules.formula.entity.FormulaResult;
 import io.github.qyvlik.formula.modules.formula.entity.FormulaVariable;
@@ -54,7 +53,7 @@ public class FormulaExecutor {
         } catch (Exception e) {
             logger.error("eval fail : other error:{}", e.getMessage());
         } finally {
-            logger.info("eval formula:{} {} time:{} ms",
+            logger.debug("eval formula:{} {} time:{} ms",
                     formula, result, System.currentTimeMillis() - startTime);
         }
 
