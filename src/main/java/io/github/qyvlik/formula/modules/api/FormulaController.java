@@ -93,9 +93,19 @@ public class FormulaController {
         }
     }
 
-
     @RequestMapping(value = "api/v1/formula/eval", method = RequestMethod.GET)
-    public ResponseObject<FormulaResult> calculate(@RequestParam String formula) {
+    public ResponseObject<String> eval(@RequestParam String formula) {
+        try {
+            FormulaResult formulaResult = formulaCalculator.calculate(formula);
+
+            return new ResponseObject<>(formulaResult.getFormula());
+        } catch (Exception e) {
+            return new ResponseObject<>(20500, e.getMessage());
+        }
+    }
+
+    @RequestMapping(value = "api/v1/formula/debug", method = RequestMethod.GET)
+    public ResponseObject<FormulaResult> debug(@RequestParam String formula) {
         try {
             FormulaResult formulaResult = formulaCalculator.calculate(formula);
 
@@ -104,5 +114,6 @@ public class FormulaController {
             return new ResponseObject<>(20500, e.getMessage());
         }
     }
+
 
 }
