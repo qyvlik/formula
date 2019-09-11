@@ -1,16 +1,20 @@
 package io.github.qyvlik.formula.modules.formula.service.impl;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import io.github.qyvlik.formula.modules.formula.entity.FormulaResult;
 import io.github.qyvlik.formula.modules.formula.entity.FormulaVariable;
+import jdk.nashorn.api.scripting.ScriptObjectMirror;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptException;
 import javax.script.SimpleScriptContext;
-import java.math.BigDecimal;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class FormulaExecutor {
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -33,40 +37,54 @@ public class FormulaExecutor {
         FormulaResult formulaResult = new FormulaResult();
         formulaResult.setFormula(formula);
         formulaResult.setContext(contextMap);
-        ScriptContext scriptContext = getScriptContext(contextMap, startTime);
+        formulaResult.setExpired(Maps.newHashMap());
+        formulaResult.setTs(startTime);
+
+        engineRemoveAndSetBindings(engine, contextMap);
 
         Object result = null;
         try {
-            result = engine.eval(formula, scriptContext);
+            result = engine.eval(formula);
 
-            formulaResult.setResult(new BigDecimal(result.toString()).toPlainString());
+            formulaResult.setResult(result.toString());
 
         } catch (ScriptException e) {
             logger.debug("eval fail : error:{}", e.getMessage());
 
             throw new RuntimeException(e.getMessage());
+        } catch (Exception e) {
+            logger.error("eval fail : other error:{}", e.getMessage());
         } finally {
-            logger.debug("eval formula:{} {} time:{} ms",
+            logger.info("eval formula:{} {} time:{} ms",
                     formula, result, System.currentTimeMillis() - startTime);
         }
 
         return formulaResult;
     }
 
-    private ScriptContext getScriptContext(Map<String, FormulaVariable> contextMap, Long currentTimeMillis) {
-        ScriptContext scriptContext = new SimpleScriptContext();
-        for (Map.Entry<String, FormulaVariable> entry : contextMap.entrySet()) {
-            FormulaVariable variable = entry.getValue();
+    private void engineRemoveAndSetBindings(ScriptEngine engine,
+                                            Map<String, FormulaVariable> contextMap) {
+        ScriptObjectMirror engineBindings = (ScriptObjectMirror) engine.getBindings(SimpleScriptContext.ENGINE_SCOPE);
 
-            // variable is timeout
-            if (variable.getTimestamp() + variable.getTimeout() < currentTimeMillis) {
-                logger.debug("getScriptContext failure : name:{} timeout", variable.getName());
+        Set<String> variableNames = Sets.newHashSet(engineBindings.getOwnKeys(true));
+
+        List<String> whiteVariableNames = Lists.newArrayList(
+                "__FILE__", "__DIR__", "__LINE__",
+                "undefined", "NaN", "Infinity", "arguments",
+                "Math"
+        );
+
+        for (String variable : variableNames) {
+            if (whiteVariableNames.contains(variable)) {
+                logger.debug("white variable:{}", variable);
                 continue;
             }
-
-            scriptContext.setAttribute(entry.getKey(), variable.getValue().doubleValue(),
-                    SimpleScriptContext.ENGINE_SCOPE);
+            engineBindings.remove(variable);
         }
-        return scriptContext;
+
+        for (Map.Entry<String, FormulaVariable> entry : contextMap.entrySet()) {
+            FormulaVariable variable = entry.getValue();
+            engineBindings.put(entry.getKey(), variable.getValue().doubleValue());
+        }
     }
 }

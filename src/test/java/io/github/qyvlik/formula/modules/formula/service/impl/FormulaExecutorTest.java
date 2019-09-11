@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.script.ScriptEngine;
+import javax.script.ScriptException;
 import java.math.BigDecimal;
 import java.util.Map;
 import java.util.Set;
@@ -18,6 +19,14 @@ public class FormulaExecutorTest {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
+    @Test
+    public void test() throws ScriptException {
+        NashornScriptEngineFactory factory = new NashornScriptEngineFactory();
+        ScriptEngine engine = factory.getScriptEngine(new String[]{"-strict", "--no-java", "--no-syntax-extensions"});
+        Object result = engine.eval("Math.min.__defineSetter__");
+
+        logger.info("result:{}", result);
+    }
 
     @Test
     public void execute() throws Exception {

@@ -1,5 +1,6 @@
 package io.github.qyvlik.formula.modules.formula.service.impl;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import io.github.qyvlik.formula.modules.formula.entity.FormulaResult;
 import io.github.qyvlik.formula.modules.formula.entity.FormulaVariable;
@@ -11,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.StopWatch;
 
 import javax.script.ScriptEngine;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -40,26 +42,29 @@ public class FormulaCalculatorImpl implements FormulaCalculator {
 
     @Override
     public FormulaResult calculate(String formula) {
-        if (!validateFormula(formula)) {
-            throw new RuntimeException("formula contains invalid key word");
+        if (StringUtils.isBlank(formula)) {
+            throw new RuntimeException("calculate formula failure : formula is blank");
         }
+
+        // 全部转小写，并去除空白字符
+        formula = formula.toLowerCase().replaceAll("\\s+", "");
+        validateFormula(formula);
 
         StopWatch stopWatch = new StopWatch("calculate");
 
-        stopWatch.start("getScriptEngine");
-        ScriptEngine engine = factory.getScriptEngine(new String[]{"-strict", "--no-java", "--no-syntax-extensions"});
-        stopWatch.stop();
-
         stopWatch.start("replaceVariable");
-        formula = replaceVariable(formula, aliasMap);
+        formula = replaceVariable(formula, getAliasMap());
         stopWatch.stop();
 
-        stopWatch.start("getVariableNamesFromFormula");
         Set<String> variableNames = getVariableNamesFromFormula(formula);
-        stopWatch.stop();
 
         stopWatch.start("getFormulaVariableMap");
-        Map<String, FormulaVariable> variableMap = formulaVariableService.getFormulaVariableMap(variableNames);
+        Map<String, FormulaVariable> variableMap =
+                formulaVariableService.getFormulaVariableMap(variableNames);
+        stopWatch.stop();
+
+        stopWatch.start("getScriptEngine");
+        ScriptEngine engine = factory.getScriptEngine(new String[]{"-strict", "--no-java", "--no-syntax-extensions"});
         stopWatch.stop();
 
         FormulaExecutor executor = new FormulaExecutor(
@@ -82,8 +87,7 @@ public class FormulaCalculatorImpl implements FormulaCalculator {
     }
 
     private Set<String> getVariableNamesFromFormula(String formula) {
-        formula = formula.replaceAll("\\s+", "");
-        String[] variables = formula.split("\\+|\\-|\\*|\\/|%|\\(|\\)");
+        String[] variables = formula.split("\\+|\\-|\\*|\\/|%|\\(|\\)|,");
         Set<String> names = Sets.newHashSet();
         for (String variableName : variables) {
             if (StringUtils.isBlank(variableName)) {
@@ -94,23 +98,22 @@ public class FormulaCalculatorImpl implements FormulaCalculator {
         return names;
     }
 
-    private String replaceVariable(String script, Map<String, String> variableAliasMap) {
-        // 全部转小写
-        script = script.toLowerCase();
-
+    private String replaceVariable(String formulaScript, Map<String, String> variableAliasMap) {
         // 替换数学公式
-        script = handleScript(script);
+        formulaScript = handleScript(formulaScript);
 
         if (variableAliasMap == null || variableAliasMap.isEmpty()) {
-            return script;
+            return formulaScript;
         }
 
         // 替换别名
+        // from: okex_,  such as `okex_xxx_xxx`
+        // to:   okex3_, such as `okex3_xxx_xxx`
         for (Map.Entry<String, String> entry : variableAliasMap.entrySet()) {
-            script = script.replaceAll(entry.getKey(), entry.getValue());
+            formulaScript = formulaScript.replaceAll(entry.getKey(), entry.getValue());
         }
 
-        return script;
+        return formulaScript;
     }
 
     private String handleScript(String script) {
@@ -123,66 +126,37 @@ public class FormulaCalculatorImpl implements FormulaCalculator {
         return script;
     }
 
-    private boolean validateFormula(String formula) {
-        if (StringUtils.isBlank(formula)) {
-            return false;
+    private void validateFormula(String formula) {
+        List<String> blackKeywords = Lists.newArrayList(
+                "while", "if", "for", "switch", "case",
+                "try", "catch", "throw", "with",
+                "function", "new", "delete",
+                "var", "true", "false",
+
+                "|", "&", "^", "!", "{", "}", "[", "]", "\"", "'", "\\", "=", ":", ";",
+
+                "this",
+
+                "length", "name", "apply", "bind", "call", "caller", "constructor", "hasOwnProperty",
+                "isPrototypeOf", "propertyIsEnumerable", "valueOf",
+                "__defineSetter__", "__defineSetter__", "__lookupGetter__", "__lookupSetter__", "__proto__",
+                "toLocaleString", "toString",
+
+                "join",
+
+                "prototype", "global",
+                "Array", "Number", "String", "Function", "Object",
+                "Java", "java", "arguments", "console", "eval", "Math",
+
+                "print", "load", "loadWithNewGlobal", "javax.script", "javax",
+                "script", "exit", "quit"
+        );
+
+        for (String keyword : blackKeywords) {
+            if (formula.contains(keyword.toLowerCase())) {
+                throw new RuntimeException("validateFormula failure : formula contains black keyword: `" + keyword + "`");
+            }
         }
-        // white keyword: `+`, `-`, `*`, `/`, `%`, `(`, `)`
-        // black keyword
-        if (formula.contains("while")
-                || formula.contains("if")
-                || formula.contains("for")
-                || formula.contains("switch")
-                || formula.contains("case")
-                || formula.contains("try")
-                || formula.contains("catch")
-                || formula.contains("throw")
-                || formula.contains("with")
-                || formula.contains("function")
-                || formula.contains("new")
-                || formula.contains("var")
-                || formula.contains("true")
-                || formula.contains("false")
-
-                || formula.contains("|")
-                || formula.contains("&")
-                || formula.contains("^")
-                || formula.contains("!")
-
-                || formula.contains("{")
-                || formula.contains("}")
-                || formula.contains("[")
-                || formula.contains("]")
-                || formula.contains("\"")
-                || formula.contains("\'")
-                || formula.contains("=")
-                || formula.contains(":")
-                || formula.contains(",")
-                || formula.contains(";")
-
-                // function
-                || formula.contains("call")
-                || formula.contains("apply")
-                || formula.contains("toString")
-                || formula.contains("join")
-                || formula.contains("print")
-
-                // properties
-                || formula.contains("prototype")
-
-                // type
-                || formula.contains("Array")
-                || formula.contains("Number")
-                || formula.contains("Function")
-                || formula.contains("Object")
-
-                // global object
-                || formula.contains("console")
-                || formula.contains("Math")
-                ) {
-            return false;
-        }
-        return true;
     }
 
 }

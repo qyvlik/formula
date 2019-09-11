@@ -5,9 +5,11 @@ import java.util.Map;
 
 public class FormulaResult implements Serializable {
     private Long cost;
+    private Long ts;
     private String formula;
     private String result;
     private Map<String, FormulaVariable> context;
+    private Map<String, FormulaVariable> expired;
 
     public FormulaResult() {
 
@@ -43,6 +45,22 @@ public class FormulaResult implements Serializable {
 
     public void setContext(Map<String, FormulaVariable> context) {
         this.context = context;
+    }
+
+    public Long getTs() {
+        return ts;
+    }
+
+    public void setTs(Long ts) {
+        this.ts = ts;
+    }
+
+    public Map<String, FormulaVariable> getExpired() {
+        return expired;
+    }
+
+    public void setExpired(Map<String, FormulaVariable> expired) {
+        this.expired = expired;
     }
 
     @Override

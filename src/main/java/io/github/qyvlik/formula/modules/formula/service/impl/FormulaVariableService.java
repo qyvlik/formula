@@ -27,15 +27,25 @@ public class FormulaVariableService {
             fullVariableNames.add(FORMULA_VARIABLE_PREFIX + name);
         }
 
+        long currentTimeMillis = System.currentTimeMillis();
+
         Map<String, FormulaVariable> variableMap = Maps.newHashMap();
 
         for (String fullVariableName : fullVariableNames) {
-            // multiGet 对于 redis-cluster 不适用
+            // multiGet not work in redis-cluster
             String value = redisTemplate.opsForValue().get(fullVariableName);
             if (StringUtils.isBlank(value)) {
-                continue;
+                throw new RuntimeException("variable "
+                        + fullVariableName.replaceAll(FORMULA_VARIABLE_PREFIX, "") + " not exist");
             }
             FormulaVariable formulaVariable = JSON.parseObject(value).toJavaObject(FormulaVariable.class);
+
+            // variable is timeout
+            if (formulaVariable.getTimestamp() + formulaVariable.getTimeout() < currentTimeMillis) {
+                throw new RuntimeException("variable "
+                        + fullVariableName.replaceAll(FORMULA_VARIABLE_PREFIX, "") + " expired");
+            }
+
             variableMap.put(formulaVariable.getName(), formulaVariable);
         }
 
@@ -62,6 +72,7 @@ public class FormulaVariableService {
         redisTemplate.opsForSet().remove(FORMULA_VARIABLE_NAMES, variableName);
     }
 
+    // todo use scan
     public Set<String> getAllVariableNames() {
         return redisTemplate.opsForSet().members(FORMULA_VARIABLE_NAMES);
     }

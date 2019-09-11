@@ -193,3 +193,11 @@ response
   }
 }
 ```
+
+## Nashorn secure
+
+[how-stop-nashorn-from-allowing-the-quit-function](https://stackoverflow.com/questions/31127641/how-stop-nashorn-from-allowing-the-quit-function)
+
+[Nashorn script security permissions](https://wiki.openjdk.java.net/display/Nashorn/Nashorn+script+security+permissions)
+
+[secure-nashorn-js-execution](https://stackoverflow.com/questions/20793089/secure-nashorn-js-execution)
