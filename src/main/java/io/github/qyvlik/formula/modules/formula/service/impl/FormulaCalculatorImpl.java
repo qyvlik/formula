@@ -77,7 +77,7 @@ public class FormulaCalculatorImpl implements FormulaCalculator {
         FormulaResult formulaResult = executor.eval();
         stopWatch.stop();
 
-        if (stopWatch.getTotalTimeMillis() > 100) {
+        if (stopWatch.getTotalTimeMillis() > 10) {
             logger.debug("calculate : formula:{}", formula, stopWatch.prettyPrint());
         }
 
@@ -93,6 +93,11 @@ public class FormulaCalculatorImpl implements FormulaCalculator {
             if (StringUtils.isBlank(variableName)) {
                 continue;
             }
+
+            if (variableName.startsWith("Math.")) {
+                continue;
+            }
+
             names.add(variableName);
         }
         return names;
