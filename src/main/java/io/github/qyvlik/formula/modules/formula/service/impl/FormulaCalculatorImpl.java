@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.StopWatch;
 
 import javax.script.ScriptEngine;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -118,7 +119,12 @@ public class FormulaCalculatorImpl implements FormulaCalculator {
     }
 
     private boolean isNumeric(String strNum) {
-        return strNum.matches("-?\\d+(\\.\\d+)?");
+        try {
+            new BigDecimal(strNum);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     private String replaceVariable(String formulaScript, Map<String, String> variableAliasMap) {
