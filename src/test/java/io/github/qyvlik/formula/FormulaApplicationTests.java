@@ -494,5 +494,16 @@ public class FormulaApplicationTests {
         Assert.assertTrue(evalResponseObj.getError().getMessage().contains("formula contains black keyword: `exit`"));
     }
 
-    // 9.8e-7*okex3_btc_usdt
+    @Test
+    public void test012_eval_scientific_notation() throws Exception {
+        String evalResponseString = this.mockMvc.perform(
+                get("/api/v1/formula/debug?formula=9.8e-7")
+        ).andExpect(status().isOk())
+                .andExpect(content().contentType("application/json;charset=UTF-8"))
+                .andReturn().getResponse().getContentAsString();
+
+        ResponseObject evalResponseObj = JSON.parseObject(evalResponseString)
+                .toJavaObject(ResponseObject.class);
+        Assert.assertTrue(evalResponseObj.getError() == null);
+    }
 }
