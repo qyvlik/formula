@@ -113,6 +113,9 @@ public class FormulaCalculatorImpl implements FormulaCalculator {
             if (isNumeric(variableName)) {
                 continue;
             }
+            if (StringUtils.isNumeric(variableName.substring(0, 1))) {
+                continue;
+            }
             names.add(variableName);
         }
         return names;
