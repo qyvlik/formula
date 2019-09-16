@@ -506,4 +506,30 @@ public class FormulaApplicationTests {
                 .toJavaObject(ResponseObject.class);
         Assert.assertTrue(evalResponseObj.getError() == null);
     }
+
+    @Test
+    public void test013_eval_math() throws Exception {
+        String evalResponseString = this.mockMvc.perform(
+                get("/api/v1/formula/debug?formula=Math.min(1, 2)")
+        ).andExpect(status().isOk())
+                .andExpect(content().contentType("application/json;charset=UTF-8"))
+                .andReturn().getResponse().getContentAsString();
+
+        ResponseObject evalResponseObj = JSON.parseObject(evalResponseString)
+                .toJavaObject(ResponseObject.class);
+        Assert.assertTrue(evalResponseObj.getError() != null);
+    }
+
+    @Test
+    public void test014_get_alias() throws Exception {
+        String evalResponseString = this.mockMvc.perform(
+                get("/api/v1/formula/variables/alias")
+        ).andExpect(status().isOk())
+                .andExpect(content().contentType("application/json;charset=UTF-8"))
+                .andReturn().getResponse().getContentAsString();
+
+        ResponseObject evalResponseObj = JSON.parseObject(evalResponseString)
+                .toJavaObject(ResponseObject.class);
+        Assert.assertTrue(evalResponseObj.getError() == null);
+    }
 }

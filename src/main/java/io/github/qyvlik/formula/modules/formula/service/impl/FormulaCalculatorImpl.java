@@ -107,7 +107,7 @@ public class FormulaCalculatorImpl implements FormulaCalculator {
             if (StringUtils.isBlank(variableName)) {
                 continue;
             }
-            if (variableName.startsWith("Math.")) {
+            if (variableName.startsWith("math.")) {
                 continue;
             }
             if (isNumeric(variableName)) {

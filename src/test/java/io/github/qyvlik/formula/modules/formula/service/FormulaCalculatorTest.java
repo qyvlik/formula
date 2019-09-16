@@ -22,7 +22,6 @@ public class FormulaCalculatorTest {
     @Before
     public void setup() {
         formulaVariableService = new FormulaVariableMapImpl();
-
         formulaCalculator = new FormulaCalculatorImpl();
         formulaCalculator.setFormulaVariableService(formulaVariableService);
         formulaCalculator.setAliasMap(null);
