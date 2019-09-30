@@ -110,6 +110,9 @@ public class FormulaCalculatorImpl implements FormulaCalculator {
             if (variableName.startsWith("math.")) {
                 continue;
             }
+            if (variableName.startsWith("Math.")) {
+                continue;
+            }
             if (isNumeric(variableName)) {
                 continue;
             }

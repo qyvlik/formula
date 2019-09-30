@@ -5,6 +5,8 @@ Update variable, and use javascript engine calculate the result.
 For example, regularly update the variables `usd_in_cny` and `huobipro_usdt_btc`, 
 and calculate `huobipro_usdt_btc*usd_in_cny`, you can get the bitcoin CNY price.
 
+> **Use the [qyvlik/formula-data](https://github.com/qyvlik/formula-data) to regularly update the variables.**
+
 ## docker
 
 [qyvlik/formula](https://hub.docker.com/r/qyvlik/formula)
