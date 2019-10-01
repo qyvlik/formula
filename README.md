@@ -11,21 +11,7 @@ and calculate `huobipro_usdt_btc*usd_in_cny`, you can get the bitcoin CNY price.
 
 [qyvlik/formula](https://hub.docker.com/r/qyvlik/formula)
 
-The follow is `docker-compose.yaml` template file.
-
-```yaml
-version: '2.2'
-services:
-  redis:
-    image: redis:4
-  formula:
-    image: qyvlik/formula:latest
-    ports:
-      - '8120:8120'
-    environment:
-      - SPRING_PROFILES_ACTIVE=prod
-      - SPRING_REDIS_HOST=redis
-```
+`docker-compose` see [qyvlik/formula-docker](https://github.com/qyvlik/qyvlik/formula-docker) 
 
 ## api
 
