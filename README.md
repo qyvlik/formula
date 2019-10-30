@@ -11,7 +11,7 @@ and calculate `huobipro_usdt_btc*usd_in_cny`, you can get the bitcoin CNY price.
 
 [qyvlik/formula](https://hub.docker.com/r/qyvlik/formula)
 
-`docker-compose` see [qyvlik/formula-docker](https://github.com/qyvlik/qyvlik/formula-docker) 
+`docker-compose` see [qyvlik/formula-docker](https://github.com/qyvlik/formula-docker) 
 
 ## api
 
