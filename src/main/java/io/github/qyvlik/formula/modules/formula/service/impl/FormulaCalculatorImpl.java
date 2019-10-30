@@ -1,5 +1,6 @@
 package io.github.qyvlik.formula.modules.formula.service.impl;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import io.github.qyvlik.formula.modules.formula.entity.FormulaResult;
@@ -7,12 +8,14 @@ import io.github.qyvlik.formula.modules.formula.entity.FormulaVariable;
 import io.github.qyvlik.formula.modules.formula.service.FormulaCalculator;
 import io.github.qyvlik.formula.modules.formula.service.FormulaVariableService;
 import jdk.nashorn.api.scripting.NashornScriptEngineFactory;
+import jdk.nashorn.api.scripting.ScriptObjectMirror;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StopWatch;
 
 import javax.script.ScriptEngine;
+import javax.script.SimpleScriptContext;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
@@ -23,7 +26,32 @@ public class FormulaCalculatorImpl implements FormulaCalculator {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final NashornScriptEngineFactory factory = new NashornScriptEngineFactory();
-    private final ThreadLocal<ScriptEngine> engineThreadLocal = new ThreadLocal<>();
+
+    private final ThreadLocal<ScriptEngine> engineThreadLocal = new ThreadLocal<ScriptEngine>() {
+        private final List<String> whiteVariableNames = ImmutableList.of("__FILE__", "__DIR__", "__LINE__",
+                "undefined", "NaN", "Infinity", "arguments",
+                "Math");
+
+        @Override
+        public ScriptEngine initialValue() {
+            ScriptEngine engine = factory.getScriptEngine(
+                    new String[]{"-strict", "--no-java", "--no-syntax-extensions"});
+
+            ScriptObjectMirror engineBindings = (ScriptObjectMirror)
+                    engine.getBindings(SimpleScriptContext.ENGINE_SCOPE);
+
+            Set<String> variableNames = Sets.newHashSet(engineBindings.getOwnKeys(true));
+
+            for (String variable : variableNames) {
+                if (whiteVariableNames.contains(variable)) {
+                    continue;
+                }
+                engineBindings.remove(variable);
+            }
+
+            return engine;
+        }
+    };
 
     private Map<String, String> aliasMap;
     private FormulaVariableService formulaVariableService;
@@ -46,11 +74,6 @@ public class FormulaCalculatorImpl implements FormulaCalculator {
     }
 
     private ScriptEngine createScriptEngine() {
-        if (engineThreadLocal.get() == null) {
-            ScriptEngine engine = factory.getScriptEngine(
-                    new String[]{"-strict", "--no-java", "--no-syntax-extensions"});
-            engineThreadLocal.set(engine);
-        }
         return engineThreadLocal.get();
     }
 
@@ -181,10 +204,14 @@ public class FormulaCalculatorImpl implements FormulaCalculator {
 
                 "prototype", "global",
                 "Array", "Number", "String", "Function", "Object",
-                "Java", "java", "arguments", "console", "eval", "Math",
+                "Java", "java", "console", "eval",
 
                 "print", "load", "loadWithNewGlobal", "javax.script", "javax",
-                "script", "exit", "quit"
+                "script", "exit", "quit",
+
+                "__FILE__", "__DIR__", "__LINE__",
+                "undefined", "NaN", "Infinity", "arguments",
+                "Math"
         );
 
         for (String keyword : blackKeywords) {

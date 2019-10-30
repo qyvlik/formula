@@ -1,7 +1,5 @@
 package io.github.qyvlik.formula.modules.formula.service.impl;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import io.github.qyvlik.formula.modules.formula.entity.FormulaResult;
 import io.github.qyvlik.formula.modules.formula.entity.FormulaVariable;
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
@@ -10,9 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.script.ScriptEngine;
 import javax.script.SimpleScriptContext;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class FormulaExecutor {
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -40,7 +36,7 @@ public class FormulaExecutor {
         Object result = null;
         try {
 
-            engineRemoveAndSetBindings(engine, contextMap);
+            engineBindings(engine, contextMap);
 
             result = engine.eval(formula);
 
@@ -60,24 +56,9 @@ public class FormulaExecutor {
         return formulaResult;
     }
 
-    private void engineRemoveAndSetBindings(ScriptEngine engine,
-                                            Map<String, FormulaVariable> contextMap) {
+    private void engineBindings(ScriptEngine engine,
+                                Map<String, FormulaVariable> contextMap) {
         ScriptObjectMirror engineBindings = (ScriptObjectMirror) engine.getBindings(SimpleScriptContext.ENGINE_SCOPE);
-
-        Set<String> variableNames = Sets.newHashSet(engineBindings.getOwnKeys(true));
-
-        List<String> whiteVariableNames = Lists.newArrayList(
-                "__FILE__", "__DIR__", "__LINE__",
-                "undefined", "NaN", "Infinity", "arguments",
-                "Math"
-        );
-
-        for (String variable : variableNames) {
-            if (whiteVariableNames.contains(variable)) {
-                continue;
-            }
-            engineBindings.remove(variable);
-        }
 
         for (Map.Entry<String, FormulaVariable> entry : contextMap.entrySet()) {
             FormulaVariable variable = entry.getValue();
