@@ -544,6 +544,5 @@ public class FormulaApplicationTests {
         ResponseObject evalResponseObj = JSON.parseObject(evalResponseString)
                 .toJavaObject(ResponseObject.class);
         Assert.assertTrue(evalResponseObj.getError() == null);
-
     }
 }

@@ -1,7 +1,6 @@
 package io.github.qyvlik.formula.modules.formula.service.impl;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import io.github.qyvlik.formula.modules.formula.entity.FormulaResult;
 import io.github.qyvlik.formula.modules.formula.entity.FormulaVariable;
@@ -26,6 +25,35 @@ public class FormulaCalculatorImpl implements FormulaCalculator {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final NashornScriptEngineFactory factory = new NashornScriptEngineFactory();
+
+    private final List<String> blackKeywords = ImmutableList.of(
+            "while", "if", "for", "switch", "case",
+            "try", "catch", "throw", "with",
+            "function", "new", "delete",
+            "var", "true", "false",
+
+            "|", "&", "^", "!", "{", "}", "[", "]", "\"", "'", "\\", "=", ":", ";",
+
+            "this",
+
+            "length", "name", "apply", "bind", "call", "caller", "constructor", "hasOwnProperty",
+            "isPrototypeOf", "propertyIsEnumerable", "valueOf",
+            "__defineSetter__", "__defineSetter__", "__lookupGetter__", "__lookupSetter__", "__proto__",
+            "toLocaleString", "toString",
+
+            "join",
+
+            "prototype", "global",
+            "Array", "Number", "String", "Function", "Object",
+            "Java", "java", "console", "eval",
+
+            "print", "load", "loadWithNewGlobal", "javax.script", "javax",
+            "script", "exit", "quit",
+
+            "__FILE__", "__DIR__", "__LINE__",
+            "undefined", "NaN", "Infinity", "arguments",
+            "Math"
+    );
 
     private final ThreadLocal<ScriptEngine> engineThreadLocal = new ThreadLocal<ScriptEngine>() {
         private final List<String> whiteVariableNames = ImmutableList.of("__FILE__", "__DIR__", "__LINE__",
@@ -185,35 +213,6 @@ public class FormulaCalculatorImpl implements FormulaCalculator {
     }
 
     private void validateFormula(String formula) {
-        List<String> blackKeywords = Lists.newArrayList(
-                "while", "if", "for", "switch", "case",
-                "try", "catch", "throw", "with",
-                "function", "new", "delete",
-                "var", "true", "false",
-
-                "|", "&", "^", "!", "{", "}", "[", "]", "\"", "'", "\\", "=", ":", ";",
-
-                "this",
-
-                "length", "name", "apply", "bind", "call", "caller", "constructor", "hasOwnProperty",
-                "isPrototypeOf", "propertyIsEnumerable", "valueOf",
-                "__defineSetter__", "__defineSetter__", "__lookupGetter__", "__lookupSetter__", "__proto__",
-                "toLocaleString", "toString",
-
-                "join",
-
-                "prototype", "global",
-                "Array", "Number", "String", "Function", "Object",
-                "Java", "java", "console", "eval",
-
-                "print", "load", "loadWithNewGlobal", "javax.script", "javax",
-                "script", "exit", "quit",
-
-                "__FILE__", "__DIR__", "__LINE__",
-                "undefined", "NaN", "Infinity", "arguments",
-                "Math"
-        );
-
         for (String keyword : blackKeywords) {
             if (formula.contains(keyword.toLowerCase())) {
                 throw new RuntimeException("validateFormula failure : formula contains black keyword: `" + keyword + "`");
