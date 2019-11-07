@@ -51,7 +51,7 @@ public class FormulaCalculatorImpl implements FormulaCalculator {
             "script", "exit", "quit",
 
             "__FILE__", "__DIR__", "__LINE__",
-            "undefined", "Infinity", "arguments",
+            "undefined", "NaN", "Infinity", "arguments",
             "Math"
     );
 
@@ -112,7 +112,7 @@ public class FormulaCalculatorImpl implements FormulaCalculator {
 
         // 全部转小写，并去除空白字符
         formula = formula.toLowerCase().replaceAll("\\s+", "");
-        validateFormula(formula);
+
 
         StopWatch stopWatch = new StopWatch("calculate");
 
@@ -121,6 +121,10 @@ public class FormulaCalculatorImpl implements FormulaCalculator {
         stopWatch.stop();
 
         Set<String> variableNames = getVariableNamesFromFormula(formula);
+
+        for (String variable : variableNames) {
+            validateVariable(formula, variable);
+        }
 
         stopWatch.start("getFormulaVariableMap");
         Map<String, FormulaVariable> variableMap =
@@ -211,10 +215,12 @@ public class FormulaCalculatorImpl implements FormulaCalculator {
         return script;
     }
 
-    private void validateFormula(String formula) {
+    private void validateVariable(String formula, String variable) {
         for (String keyword : blackKeywords) {
-            if (formula.contains(keyword.toLowerCase())) {
-                throw new RuntimeException("validateFormula failure : formula `"+formula+"` contains black keyword: `" + keyword + "`");
+            if (variable.equalsIgnoreCase(keyword.toLowerCase())) {
+                throw new RuntimeException("validateVariable failure : formula:" + formula
+                        + ", variable `" + variable
+                        + "` contains black keyword: `" + keyword + "`");
             }
         }
     }
