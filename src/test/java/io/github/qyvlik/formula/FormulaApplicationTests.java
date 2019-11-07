@@ -545,4 +545,95 @@ public class FormulaApplicationTests {
                 .toJavaObject(ResponseObject.class);
         Assert.assertTrue(evalResponseObj.getError() == null);
     }
+
+    @Test
+    public void test016_update_and_eval_binance() throws Exception {
+
+        long currentTimeMillis = System.currentTimeMillis();
+        long timeout = 30 * 1000L;
+
+        UpdateVariablesRequest request = new UpdateVariablesRequest();
+
+        List<FormulaVariable> variables = Lists.newLinkedList();
+
+        variables.add(new FormulaVariable(
+                "binance_btc_usdt",
+                new BigDecimal("10000"),
+                currentTimeMillis,
+                timeout
+        ));
+
+        variables.add(new FormulaVariable(
+                "usd_in_cny",
+                new BigDecimal("7.1"),
+                currentTimeMillis,
+                timeout
+        ));
+
+        request.setVariables(variables);
+
+        String updateVariablesResponseString = this.mockMvc.perform(
+                post("/api/v1/formula/variables/update")
+                        .contentType(MediaType.parseMediaType("application/json;charset=UTF-8"))
+                        .header("token", token)
+                        .content(JSON.toJSONString(request))
+        ).andExpect(status().isOk())
+                .andExpect(content().contentType("application/json;charset=UTF-8"))
+                .andReturn().getResponse().getContentAsString();
+
+        ResponseObject registerResponseObj = JSON.parseObject(updateVariablesResponseString)
+                .toJavaObject(ResponseObject.class);
+
+        Assert.assertTrue(registerResponseObj.getError() == null);
+        Assert.assertTrue(registerResponseObj.getResult().toString().equalsIgnoreCase("success"));
+
+        String allVariableNames = this.mockMvc.perform(
+                get("/api/v1/formula/variables/names")
+        ).andExpect(status().isOk())
+                .andExpect(content().contentType("application/json;charset=UTF-8"))
+                .andReturn().getResponse().getContentAsString();
+
+        ResponseObject allVariableNamesResponseObj = JSON.parseObject(allVariableNames)
+                .toJavaObject(ResponseObject.class);
+
+        Assert.assertTrue(allVariableNamesResponseObj.getError() == null);
+        List<String> variableNames = ((JSONArray) allVariableNamesResponseObj.getResult()).toJavaList(String.class);
+
+        Assert.assertTrue("must contain binance_btc_usdt", variableNames.contains("binance_btc_usdt"));
+        Assert.assertTrue("must contain usd_in_cny", variableNames.contains("usd_in_cny"));
+
+        for (String variableName : variableNames) {
+            String variableResponseString = this.mockMvc.perform(
+                    get("/api/v1/formula/variable/" + variableName)
+            ).andExpect(status().isOk())
+                    .andExpect(content().contentType("application/json;charset=UTF-8"))
+                    .andReturn().getResponse().getContentAsString();
+            ResponseObject variableResponseObj = JSON.parseObject(variableResponseString)
+                    .toJavaObject(ResponseObject.class);
+
+            Assert.assertTrue(variableResponseObj.getError() == null);
+            Assert.assertTrue(variableResponseObj.getResult() != null);
+
+            FormulaVariable formulaVariable =
+                    ((JSONObject) variableResponseObj.getResult()).toJavaObject(FormulaVariable.class);
+            Assert.assertTrue(formulaVariable.getValue().compareTo(BigDecimal.ZERO) > 0);
+        }
+
+        logger.info("variableNames:{}", variableNames);
+
+        String evalResponseString = this.mockMvc.perform(
+                get("/api/v1/formula/eval?formula=binance_btc_usdt*usd_in_cny")
+        ).andExpect(status().isOk())
+                .andExpect(content().contentType("application/json;charset=UTF-8"))
+                .andReturn().getResponse().getContentAsString();
+
+        ResponseObject evalResponseObj = JSON.parseObject(evalResponseString)
+                .toJavaObject(ResponseObject.class);
+        Assert.assertTrue(evalResponseObj.getError() == null);
+
+        BigDecimal evalResult = new BigDecimal(evalResponseObj.getResult().toString());
+
+        Assert.assertTrue("evalResult is 71000", evalResult.compareTo(new BigDecimal("71000")) == 0);
+    }
+
 }
