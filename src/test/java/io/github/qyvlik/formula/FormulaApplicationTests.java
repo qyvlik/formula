@@ -477,7 +477,7 @@ public class FormulaApplicationTests {
         ResponseObject evalResponseObj = JSON.parseObject(evalResponseString)
                 .toJavaObject(ResponseObject.class);
         Assert.assertTrue(evalResponseObj.getError() != null);
-        Assert.assertTrue(evalResponseObj.getError().getMessage().contains("formula contains black keyword: `quit`"));
+        Assert.assertTrue(evalResponseObj.getError().getMessage().contains("contains black keyword: `quit`"));
     }
 
     @Test
@@ -491,7 +491,7 @@ public class FormulaApplicationTests {
         ResponseObject evalResponseObj = JSON.parseObject(evalResponseString)
                 .toJavaObject(ResponseObject.class);
         Assert.assertTrue(evalResponseObj.getError() != null);
-        Assert.assertTrue(evalResponseObj.getError().getMessage().contains("formula contains black keyword: `exit`"));
+        Assert.assertTrue(evalResponseObj.getError().getMessage().contains("contains black keyword: `exit`"));
     }
 
     @Test
