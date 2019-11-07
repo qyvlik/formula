@@ -51,7 +51,7 @@ public class FormulaCalculatorImpl implements FormulaCalculator {
             "script", "exit", "quit",
 
             "__FILE__", "__DIR__", "__LINE__",
-            "undefined", "NaN", "Infinity", "arguments",
+            "undefined", "Infinity", "arguments",
             "Math"
     );
 
