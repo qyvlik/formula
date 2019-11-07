@@ -62,8 +62,7 @@ public class FormulaCalculatorImpl implements FormulaCalculator {
 
         @Override
         public ScriptEngine initialValue() {
-            ScriptEngine engine = factory.getScriptEngine(
-                    new String[]{"-strict", "--no-java", "--no-syntax-extensions"});
+            ScriptEngine engine = factory.getScriptEngine("-strict", "--no-java", "--no-syntax-extensions");
 
             ScriptObjectMirror engineBindings = (ScriptObjectMirror)
                     engine.getBindings(SimpleScriptContext.ENGINE_SCOPE);
