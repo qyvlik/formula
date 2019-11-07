@@ -214,7 +214,7 @@ public class FormulaCalculatorImpl implements FormulaCalculator {
     private void validateFormula(String formula) {
         for (String keyword : blackKeywords) {
             if (formula.contains(keyword.toLowerCase())) {
-                throw new RuntimeException("validateFormula failure : formula contains black keyword: `" + keyword + "`");
+                throw new RuntimeException("validateFormula failure : formula `"+formula+"` contains black keyword: `" + keyword + "`");
             }
         }
     }
