@@ -10,22 +10,15 @@ import javax.script.ScriptEngine;
 import javax.script.SimpleScriptContext;
 import java.util.Map;
 
-public class FormulaExecutor {
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+public class FormulaEval {
+    private static final Logger logger = LoggerFactory.getLogger(FormulaEval.class);
 
-    private String formula;
-    private ScriptEngine engine;
-    private Map<String, FormulaVariable> contextMap;
-
-    public FormulaExecutor(String formula,
-                           ScriptEngine engine,
-                           Map<String, FormulaVariable> contextMap) {
-        this.formula = formula;
-        this.engine = engine;
-        this.contextMap = contextMap;
+    private FormulaEval() {
     }
 
-    public FormulaResult eval() {
+    public static FormulaResult eval(String formula,
+                                     ScriptEngine engine,
+                                     Map<String, FormulaVariable> contextMap) {
         long startTime = System.currentTimeMillis();
 
         FormulaResult formulaResult = new FormulaResult();
@@ -56,8 +49,7 @@ public class FormulaExecutor {
         return formulaResult;
     }
 
-    private void engineBindings(ScriptEngine engine,
-                                Map<String, FormulaVariable> contextMap) {
+    private static void engineBindings(ScriptEngine engine, Map<String, FormulaVariable> contextMap) {
         ScriptObjectMirror engineBindings = (ScriptObjectMirror) engine.getBindings(SimpleScriptContext.ENGINE_SCOPE);
 
         for (Map.Entry<String, FormulaVariable> entry : contextMap.entrySet()) {
@@ -66,8 +58,7 @@ public class FormulaExecutor {
         }
     }
 
-    private void clearEngineBindings(ScriptEngine engine,
-                                     Map<String, FormulaVariable> contextMap) {
+    private static void clearEngineBindings(ScriptEngine engine, Map<String, FormulaVariable> contextMap) {
         try {
             ScriptObjectMirror engineBindings = (ScriptObjectMirror)
                     engine.getBindings(SimpleScriptContext.ENGINE_SCOPE);
@@ -78,6 +69,5 @@ public class FormulaExecutor {
         } catch (Exception e) {
             logger.error("clearEngineBindings failure : {}", e.getMessage());
         }
-
     }
 }

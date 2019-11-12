@@ -8,7 +8,6 @@ import io.github.qyvlik.formula.modules.formula.entity.FormulaResult;
 import io.github.qyvlik.formula.modules.formula.entity.FormulaVariable;
 import io.github.qyvlik.formula.modules.formula.service.FormulaCalculator;
 import io.github.qyvlik.formula.modules.formula.service.FormulaVariableService;
-import io.github.qyvlik.formula.modules.formula.service.impl.FormulaVariableServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

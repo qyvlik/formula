@@ -135,14 +135,8 @@ public class FormulaCalculatorImpl implements FormulaCalculator {
         ScriptEngine engine = createScriptEngine();
         stopWatch.stop();
 
-        FormulaExecutor executor = new FormulaExecutor(
-                formula,
-                engine,
-                variableMap
-        );
-
         stopWatch.start("eval");
-        FormulaResult formulaResult = executor.eval();
+        FormulaResult formulaResult = FormulaEval.eval(formula, engine, variableMap);
         stopWatch.stop();
 
         if (stopWatch.getTotalTimeMillis() > 100) {

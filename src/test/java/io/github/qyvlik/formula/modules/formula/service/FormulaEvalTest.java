@@ -3,7 +3,7 @@ package io.github.qyvlik.formula.modules.formula.service;
 import com.google.common.collect.Maps;
 import io.github.qyvlik.formula.modules.formula.entity.FormulaResult;
 import io.github.qyvlik.formula.modules.formula.entity.FormulaVariable;
-import io.github.qyvlik.formula.modules.formula.service.impl.FormulaExecutor;
+import io.github.qyvlik.formula.modules.formula.service.impl.FormulaEval;
 import jdk.nashorn.api.scripting.NashornScriptEngineFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
@@ -16,7 +16,7 @@ import javax.script.ScriptEngine;
 import java.math.BigDecimal;
 import java.util.Map;
 
-public class FormulaExecutorTest {
+public class FormulaEvalTest {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -51,13 +51,8 @@ public class FormulaExecutorTest {
                 1000L * 60              // 60s
         ));
 
-        FormulaExecutor executor = new FormulaExecutor(
-                formula,
-                engine,
-                contextMap
-        );
 
-        FormulaResult formulaResult = executor.eval();
+        FormulaResult formulaResult = FormulaEval.eval(formula, engine, contextMap);
         Assert.assertNotNull("formulaResult must not null", formulaResult);
         Assert.assertTrue("formulaResult must not null", StringUtils.isNotBlank(formulaResult.getResult()));
 
@@ -93,19 +88,13 @@ public class FormulaExecutorTest {
                 1000L * 60              // 60s
         ));
 
-        FormulaExecutor executor = new FormulaExecutor(
-                formula,
-                engine,
-                contextMap
-        );
 
         try {
-            executor.eval();
+            FormulaEval.eval(formula, engine, contextMap);
         } catch (Exception e) {
             logger.error("testFailureForContextNotExists e:", e);
             Assert.assertTrue("message must contains `undefined` and `huobipro_btc_usdt`",
                     e.getMessage().toLowerCase().contains("\"huobipro_btc_usdt\" is not defined"));
-
         }
     }
 
@@ -131,14 +120,8 @@ public class FormulaExecutorTest {
                 1000L * 60              // 60s
         ));
 
-        FormulaExecutor executor = new FormulaExecutor(
-                formula,
-                engine,
-                contextMap
-        );
-
         try {
-            executor.eval();
+            FormulaEval.eval(formula, engine, contextMap);
         } catch (Exception e) {
             logger.error("testFailureForContextNotExists e:", e);
         }
