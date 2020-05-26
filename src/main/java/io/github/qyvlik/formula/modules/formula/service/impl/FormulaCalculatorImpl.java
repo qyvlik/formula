@@ -371,6 +371,10 @@ public class FormulaCalculatorImpl implements FormulaCalculator {
         result.setContext(variableMap);
         result.setTs(System.currentTimeMillis());
 
+//        if (stopWatch.getTotalTimeMillis() > 500) {
+//            logger.debug("convert variableNames:{}, {}", variableNames, stopWatch.prettyPrint());
+//        }
+
         return result;
     }
 

@@ -8,6 +8,7 @@ import io.github.qyvlik.formula.modules.api.entity.UpdateVariablesRequest;
 import io.github.qyvlik.formula.modules.formula.entity.FormulaResult;
 import io.github.qyvlik.formula.modules.formula.entity.FormulaVariable;
 import io.github.qyvlik.formula.modules.formula.service.FormulaCalculator;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -116,6 +117,16 @@ public class FormulaController {
     @RequestMapping(value = "api/v1/formula/convert", method = RequestMethod.GET)
     public ResponseObject<FormulaResult> convert(ConvertRequest request) {
         try {
+            if (StringUtils.isBlank(request.getFrom())) {
+                return new ResponseObject<>(20500, "param from is blank");
+            }
+            if (StringUtils.isBlank(request.getTo())) {
+                return new ResponseObject<>(20500, "param to is blank");
+            }
+            if(request.getValue() == null) {
+                return new ResponseObject<>(20500, "param value is null");
+            }
+
             FormulaResult formulaResult = formulaCalculator.convert(
                     request.getFrom(), request.getTo(), request.getValue());
             return new ResponseObject<>(formulaResult);

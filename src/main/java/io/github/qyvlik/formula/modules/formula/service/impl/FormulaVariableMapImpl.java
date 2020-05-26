@@ -36,14 +36,16 @@ public class FormulaVariableMapImpl implements FormulaVariableService {
     public FormulaVariable getFormulaVariable(String variableName) {
         FormulaVariable tmp = varMap.get(variableName);
         if (tmp != null) {
-            return new FormulaVariable(tmp.getName(), tmp.getValue(), tmp.getTimestamp(), tmp.getTimeout());
+            return new FormulaVariable(tmp);
         }
         return null;
     }
 
     @Override
     public void updateFormulaVariable(FormulaVariable formulaVariable) {
-        varMap.put(formulaVariable.getName(), formulaVariable);
+        FormulaVariable temp = new FormulaVariable(formulaVariable);
+        temp.setName(formulaVariable.getName().toLowerCase());
+        varMap.put(temp.getName(), temp);
     }
 
     @Override
