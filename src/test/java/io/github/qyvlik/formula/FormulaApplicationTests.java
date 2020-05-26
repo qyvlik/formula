@@ -698,8 +698,6 @@ public class FormulaApplicationTests {
                 .andExpect(content().contentType("application/json;charset=UTF-8"))
                 .andReturn().getResponse().getContentAsString();
 
-        logger.info("convertResponseString:{}", convertResponseString);
-
         ResponseObject evalResponseObj = JSON.parseObject(convertResponseString)
                 .toJavaObject(ResponseObject.class);
         Assert.assertTrue(evalResponseObj.getError() == null);

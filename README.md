@@ -203,6 +203,49 @@ response
 }
 ```
 
+### convert
+
+```bash
+curl -X GET \
+  'http://localhost:8120/api/v1/formula/convert?from=HT&to=OKB&value=1' \
+  -H 'Accept: */*' \
+  -H 'Accept-Encoding: gzip, deflate' \
+  -H 'Cache-Control: no-cache' \
+  -H 'Connection: keep-alive' \
+  -H 'Host: localhost:8120' \
+  -H 'User-Agent: PostmanRuntime/7.16.3' \
+  -H 'cache-control: no-cache'
+```
+
+**Make sure, you have regularly update the `huobipro_ht_usdt` and `okex_okb_usdt`.**
+
+Convert 1 HT to `x` OKB, response as follow:
+ 
+```json
+{
+  "result": {
+    "cost": 11,
+    "ts": 1590500103480,
+    "formula": "1 * huobipro_ht_usdt / okex_okb_usdt",
+    "result": "0.779126213592",
+    "context": {
+      "okex_okb_usdt": {
+        "name": "okex_okb_usdt",
+        "value": 4.944,
+        "timestamp": 1590500103480,
+        "timeout": 300000
+      },
+      "huobipro_ht_usdt": {
+        "name": "huobipro_ht_usdt",
+        "value": 3.852,
+        "timestamp": 1590500101730,
+        "timeout": 300000
+      }
+    }
+  }
+}
+```
+
 ## Nashorn secure
 
 [how-stop-nashorn-from-allowing-the-quit-function](https://stackoverflow.com/questions/31127641/how-stop-nashorn-from-allowing-the-quit-function)

@@ -369,6 +369,7 @@ public class FormulaCalculatorImpl implements FormulaCalculator {
         result.setResult(resultValue.setScale(12, BigDecimal.ROUND_DOWN).stripTrailingZeros().toPlainString());
         result.setFormula(formulaBuffer.toString());
         result.setContext(variableMap);
+        result.setTs(System.currentTimeMillis());
 
         return result;
     }
