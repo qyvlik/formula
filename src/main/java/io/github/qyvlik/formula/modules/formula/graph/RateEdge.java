@@ -1,19 +1,26 @@
 package io.github.qyvlik.formula.modules.formula.graph;
 
+import com.google.common.collect.Lists;
+
 import java.util.List;
 
 public class RateEdge {
     private String baseCurrency;
     private String quoteCurrency;
+    private Double weight;
+    private Boolean reverse;
     private List<RateInfo> rates;
 
     public RateEdge() {
     }
 
-    public RateEdge(String baseCurrency, String quoteCurrency, List<RateInfo> rates) {
-        this.baseCurrency = baseCurrency;
-        this.quoteCurrency = quoteCurrency;
-        this.rates = rates;
+    public RateEdge(String symbol, Double weight, Boolean reverse) {
+        String[] symbolArray = symbol.split("_");
+        this.baseCurrency = symbolArray[0];
+        this.quoteCurrency = symbolArray[1];
+        this.weight = weight;
+        this.reverse = reverse;
+        this.rates = Lists.newArrayList();
     }
 
     @Override
@@ -35,6 +42,19 @@ public class RateEdge {
         return result;
     }
 
+    public RateInfo getBestRateInfo() {
+        if (this.getRates() == null || this.getRates().isEmpty()) {
+            return null;
+        }
+        // todo weight for exchange
+        for (RateInfo take : this.getRates()) {
+            if (take != null && !take.getReverse()) {
+                return take;
+            }
+        }
+        return this.getRates().get(0);
+    }
+
     public String getBaseCurrency() {
         return baseCurrency;
     }
@@ -51,6 +71,21 @@ public class RateEdge {
         this.quoteCurrency = quoteCurrency;
     }
 
+    public Double getWeight() {
+        return weight;
+    }
+
+    public void setWeight(Double weight) {
+        this.weight = weight;
+    }
+
+    public Boolean getReverse() {
+        return reverse;
+    }
+
+    public void setReverse(Boolean reverse) {
+        this.reverse = reverse;
+    }
 
     public List<RateInfo> getRates() {
         return rates;

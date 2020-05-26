@@ -1,5 +1,6 @@
 package io.github.qyvlik.formula.modules.formula.service.impl;
 
+import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -16,6 +17,7 @@ import io.github.qyvlik.formula.modules.formula.service.FormulaVariableService;
 import jdk.nashorn.api.scripting.NashornScriptEngineFactory;
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
 import org.apache.commons.lang3.StringUtils;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StopWatch;
@@ -166,7 +168,8 @@ public class FormulaCalculatorImpl implements FormulaCalculator {
         stopWatch.stop();
 
         stopWatch.start("getShortestPath");
-        Map<String, List<RateInfo>> map = Maps.newHashMap();
+        Map<String, RateEdge> edgeMap = Maps.newHashMap();
+
         for (String name : names) {
             name = name.toLowerCase();
 
@@ -177,27 +180,30 @@ public class FormulaCalculatorImpl implements FormulaCalculator {
             // fiat rate
             if (name.contains("_in_")) {
 
-                String baseCurrency = nameArray[0];
+                final String baseCurrency = nameArray[0];
                 // in is nameArray[1]
-                String quoteCurrency = nameArray[2];
+                final String quoteCurrency = nameArray[2];
 
                 if (!from.equals(baseCurrency) && !from.equals(quoteCurrency)
-                        &&!to.equals(baseCurrency) && !to.equals(quoteCurrency)) {
+                        && !to.equals(baseCurrency) && !to.equals(quoteCurrency)) {
                     continue;
                 }
 
                 {
                     String key = baseCurrency + "_" + quoteCurrency;
+                    RateEdge rateEdge = edgeMap.computeIfAbsent(key,
+                            k -> new RateEdge(key, 1.0, false));
                     RateInfo rateInfo = new RateInfo("FIAT_RATE", baseCurrency, quoteCurrency, false);
-                    List<RateInfo> infoList = map.computeIfAbsent(key, k -> Lists.newArrayList());
-                    infoList.add(rateInfo);
+                    rateEdge.getRates().add(rateInfo);
+                    rateEdge.setReverse(false);         // 只要有正向数据，就设置为 false
                 }
 
                 {
                     String reverseKey = quoteCurrency + "_" + baseCurrency;
+                    RateEdge rateEdge = edgeMap.computeIfAbsent(reverseKey,
+                            k -> new RateEdge(reverseKey, 1.0, true));
                     RateInfo rateInfo = new RateInfo("FIAT_RATE", quoteCurrency, baseCurrency, true);
-                    List<RateInfo> infoList = map.computeIfAbsent(reverseKey, k -> Lists.newArrayList());
-                    infoList.add(rateInfo);
+                    rateEdge.getRates().add(rateInfo);
                 }
 
             } else {
@@ -206,32 +212,34 @@ public class FormulaCalculatorImpl implements FormulaCalculator {
                 String quoteCurrency = nameArray[2];
 
                 if (!from.equals(baseCurrency) && !from.equals(quoteCurrency)
-                        &&!to.equals(baseCurrency) && !to.equals(quoteCurrency)) {
+                        && !to.equals(baseCurrency) && !to.equals(quoteCurrency)) {
                     continue;
                 }
 
                 {
                     String key = baseCurrency + "_" + quoteCurrency;
+                    RateEdge rateEdge = edgeMap.computeIfAbsent(key,
+                            k -> new RateEdge(key, 1.0, false));
                     RateInfo rateInfo = new RateInfo(exchange, baseCurrency, quoteCurrency, false);
-                    List<RateInfo> infoList = map.computeIfAbsent(key, k -> Lists.newArrayList());
-                    infoList.add(rateInfo);
+                    rateEdge.getRates().add(rateInfo);
+                    rateEdge.setReverse(false);         // 只要有正向数据，就设置为 false
                 }
+
                 {
                     String reverseKey = quoteCurrency + "_" + baseCurrency;
+                    RateEdge rateEdge = edgeMap.computeIfAbsent(reverseKey,
+                            k -> new RateEdge(reverseKey, 1.0, false));
                     RateInfo rateInfo = new RateInfo(exchange, quoteCurrency, baseCurrency, true);
-                    List<RateInfo> infoList = map.computeIfAbsent(reverseKey, k -> Lists.newArrayList());
-                    infoList.add(rateInfo);
+                    rateEdge.getRates().add(rateInfo);
                 }
             }
         }
         DirectedGraph<String, RateEdge> graph = new DirectedOrderedSparseMultigraph<>();
-        for (Map.Entry<String, List<RateInfo>> entry : map.entrySet()) {
-            String key = entry.getKey();
-            String[] keyArray = key.split("_");
-            String baseCurrency = keyArray[0];
-            String quoteCurrency = keyArray[1];
-            List<RateInfo> rateList = entry.getValue();
-            graph.addEdge(new RateEdge(baseCurrency, quoteCurrency, rateList), baseCurrency, quoteCurrency);
+        for (Map.Entry<String, RateEdge> entry : edgeMap.entrySet()) {
+            RateEdge rateEdge = entry.getValue();
+            graph.addEdge(
+                    rateEdge,
+                    rateEdge.getBaseCurrency(), rateEdge.getQuoteCurrency());
         }
         DijkstraShortestPath<String, RateEdge> decimalDijkstraShortestPath
                 = new DijkstraShortestPath<>(graph);
@@ -253,10 +261,11 @@ public class FormulaCalculatorImpl implements FormulaCalculator {
         Set<String> variableNames = Sets.newHashSet();
         List<RateInfo> rateInfoList = Lists.newArrayList();
         for (RateEdge edge : path) {
-            RateInfo rateInfo = edge.getRates().get(0);
+            RateInfo rateInfo = edge.getBestRateInfo();          // 获取一个最佳的汇率
             if (rateInfo == null) {
                 throw new RuntimeException("convert failure : rateInfo is null");
             }
+
             if (rateInfo.getExchange().equals("FIAT_RATE")) {
                 if (!rateInfo.getReverse()) {
                     variableNames.add(rateInfo.getBaseCurrency() + "_in_" + rateInfo.getQuoteCurrency());
