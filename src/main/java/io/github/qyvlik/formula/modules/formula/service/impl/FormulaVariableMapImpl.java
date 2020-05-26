@@ -17,7 +17,7 @@ public class FormulaVariableMapImpl implements FormulaVariableService {
         for (String varName : variableNames) {
             FormulaVariable formulaVariable = varMap.get(varName);
             if (formulaVariable != null) {
-                tmpVarMap.put(formulaVariable.getName(), formulaVariable);
+                tmpVarMap.put(formulaVariable.getName(), new FormulaVariable(formulaVariable));
             } else {
                 throw new RuntimeException("variable " + varName + " not exist");
             }
@@ -37,6 +37,7 @@ public class FormulaVariableMapImpl implements FormulaVariableService {
 
     @Override
     public void updateFormulaVariable(FormulaVariable formulaVariable) {
+        // todo 存入反向汇率
         varMap.put(formulaVariable.getName(), formulaVariable);
     }
 

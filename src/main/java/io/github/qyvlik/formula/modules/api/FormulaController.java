@@ -2,6 +2,7 @@ package io.github.qyvlik.formula.modules.api;
 
 import io.github.qyvlik.formula.common.base.ResponseObject;
 import io.github.qyvlik.formula.common.properties.FormulaProperties;
+import io.github.qyvlik.formula.modules.api.entity.ConvertRequest;
 import io.github.qyvlik.formula.modules.api.entity.DeleteVariablesRequest;
 import io.github.qyvlik.formula.modules.api.entity.UpdateVariablesRequest;
 import io.github.qyvlik.formula.modules.formula.entity.FormulaResult;
@@ -109,6 +110,17 @@ public class FormulaController {
         try {
             FormulaResult formulaResult = formulaCalculator.calculate(formula);
 
+            return new ResponseObject<>(formulaResult);
+        } catch (Exception e) {
+            return new ResponseObject<>(20500, e.getMessage());
+        }
+    }
+
+    @RequestMapping(value = "api/v1/formula/convert", method = RequestMethod.GET)
+    public ResponseObject<FormulaResult> convert(ConvertRequest request) {
+        try {
+            FormulaResult formulaResult = formulaCalculator.convert(
+                    request.getFrom(), request.getTo(), request.getValue());
             return new ResponseObject<>(formulaResult);
         } catch (Exception e) {
             return new ResponseObject<>(20500, e.getMessage());

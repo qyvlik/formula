@@ -67,6 +67,8 @@ public class FormulaVariableServiceImpl implements FormulaVariableService {
         String fullKey = FORMULA_VARIABLE_PREFIX + formulaVariable.getName();
         redisTemplate.opsForValue().set(fullKey, JSON.toJSONString(formulaVariable));
         redisTemplate.opsForSet().add(FORMULA_VARIABLE_NAMES, formulaVariable.getName());
+
+        // todo 存入反向汇率
     }
 
     @Override

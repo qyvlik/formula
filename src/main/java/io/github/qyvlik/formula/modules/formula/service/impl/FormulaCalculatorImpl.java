@@ -1,9 +1,16 @@
 package io.github.qyvlik.formula.modules.formula.service.impl;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import edu.uci.ics.jung.algorithms.shortestpath.DijkstraShortestPath;
+import edu.uci.ics.jung.graph.DirectedGraph;
+import edu.uci.ics.jung.graph.DirectedOrderedSparseMultigraph;
 import io.github.qyvlik.formula.modules.formula.entity.FormulaResult;
 import io.github.qyvlik.formula.modules.formula.entity.FormulaVariable;
+import io.github.qyvlik.formula.modules.formula.graph.RateEdge;
+import io.github.qyvlik.formula.modules.formula.graph.RateInfo;
 import io.github.qyvlik.formula.modules.formula.service.FormulaCalculator;
 import io.github.qyvlik.formula.modules.formula.service.FormulaVariableService;
 import jdk.nashorn.api.scripting.NashornScriptEngineFactory;
@@ -83,7 +90,6 @@ public class FormulaCalculatorImpl implements FormulaCalculator {
     private Map<String, String> aliasMap;
     private FormulaVariableService formulaVariableService;
 
-
     public Map<String, String> getAliasMap() {
         return aliasMap;
     }
@@ -146,6 +152,172 @@ public class FormulaCalculatorImpl implements FormulaCalculator {
         formulaResult.setCost(stopWatch.getTotalTimeMillis());
 
         return formulaResult;
+    }
+
+    @Override
+    public FormulaResult convert(String from, String to, BigDecimal fromValue) {
+        from = from.toLowerCase();
+        to = to.toLowerCase();
+
+        StopWatch stopWatch = new StopWatch("convert");
+
+        stopWatch.start("getAllVariableNames");
+        Set<String> names = formulaVariableService.getAllVariableNames();
+        stopWatch.stop();
+
+        stopWatch.start("getShortestPath");
+        Map<String, List<RateInfo>> map = Maps.newHashMap();
+        for (String name : names) {
+            name = name.toLowerCase();
+
+            String[] nameArray = name.split("_");
+            if (nameArray.length != 3) {
+                continue;
+            }
+            // fiat rate
+            if (name.contains("_in_")) {
+
+                String baseCurrency = nameArray[0];
+                // in is nameArray[1]
+                String quoteCurrency = nameArray[2];
+
+                if (!from.equals(baseCurrency) && !from.equals(quoteCurrency)
+                        &&!to.equals(baseCurrency) && !to.equals(quoteCurrency)) {
+                    continue;
+                }
+
+                {
+                    String key = baseCurrency + "_" + quoteCurrency;
+                    RateInfo rateInfo = new RateInfo("FIAT_RATE", baseCurrency, quoteCurrency, false);
+                    List<RateInfo> infoList = map.computeIfAbsent(key, k -> Lists.newArrayList());
+                    infoList.add(rateInfo);
+                }
+
+                {
+                    String reverseKey = quoteCurrency + "_" + baseCurrency;
+                    RateInfo rateInfo = new RateInfo("FIAT_RATE", quoteCurrency, baseCurrency, true);
+                    List<RateInfo> infoList = map.computeIfAbsent(reverseKey, k -> Lists.newArrayList());
+                    infoList.add(rateInfo);
+                }
+
+            } else {
+                String exchange = nameArray[0];
+                String baseCurrency = nameArray[1];
+                String quoteCurrency = nameArray[2];
+
+                if (!from.equals(baseCurrency) && !from.equals(quoteCurrency)
+                        &&!to.equals(baseCurrency) && !to.equals(quoteCurrency)) {
+                    continue;
+                }
+
+                {
+                    String key = baseCurrency + "_" + quoteCurrency;
+                    RateInfo rateInfo = new RateInfo(exchange, baseCurrency, quoteCurrency, false);
+                    List<RateInfo> infoList = map.computeIfAbsent(key, k -> Lists.newArrayList());
+                    infoList.add(rateInfo);
+                }
+                {
+                    String reverseKey = quoteCurrency + "_" + baseCurrency;
+                    RateInfo rateInfo = new RateInfo(exchange, quoteCurrency, baseCurrency, true);
+                    List<RateInfo> infoList = map.computeIfAbsent(reverseKey, k -> Lists.newArrayList());
+                    infoList.add(rateInfo);
+                }
+            }
+        }
+        DirectedGraph<String, RateEdge> graph = new DirectedOrderedSparseMultigraph<>();
+        for (Map.Entry<String, List<RateInfo>> entry : map.entrySet()) {
+            String key = entry.getKey();
+            String[] keyArray = key.split("_");
+            String baseCurrency = keyArray[0];
+            String quoteCurrency = keyArray[1];
+            List<RateInfo> rateList = entry.getValue();
+            graph.addEdge(new RateEdge(baseCurrency, quoteCurrency, rateList), baseCurrency, quoteCurrency);
+        }
+        DijkstraShortestPath<String, RateEdge> decimalDijkstraShortestPath
+                = new DijkstraShortestPath<>(graph);
+        List<RateEdge> path = decimalDijkstraShortestPath.getPath(from, to);
+
+        stopWatch.stop();               // stop getShortestPath
+
+
+        FormulaResult result = new FormulaResult();
+
+        if (path == null || path.isEmpty()) {
+            result.setCost(stopWatch.getTotalTimeMillis());
+            result.setFormula(from + " -> " + to + ", fromValue:" + fromValue);
+            result.setResult("");
+            return result;
+        }
+
+        stopWatch.start("getFormulaVariableMap");
+        Set<String> variableNames = Sets.newHashSet();
+        List<RateInfo> rateInfoList = Lists.newArrayList();
+        for (RateEdge edge : path) {
+            RateInfo rateInfo = edge.getRates().get(0);
+            if (rateInfo == null) {
+                throw new RuntimeException("convert failure : rateInfo is null");
+            }
+            if (rateInfo.getExchange().equals("FIAT_RATE")) {
+                if (!rateInfo.getReverse()) {
+                    variableNames.add(rateInfo.getBaseCurrency() + "_in_" + rateInfo.getQuoteCurrency());
+                } else {
+                    variableNames.add(rateInfo.getQuoteCurrency() + "_in_" + rateInfo.getBaseCurrency());
+                }
+            } else {
+                if (!rateInfo.getReverse()) {
+                    variableNames.add(rateInfo.getExchange() + "_" + rateInfo.getBaseCurrency() + "_" + rateInfo.getQuoteCurrency());
+                } else {
+                    variableNames.add(rateInfo.getExchange() + "_" + rateInfo.getQuoteCurrency() + "_" + rateInfo.getBaseCurrency());
+                }
+            }
+            rateInfoList.add(rateInfo);
+        }
+        Map<String, FormulaVariable> variableMap = formulaVariableService.getFormulaVariableMap(variableNames);
+        stopWatch.stop();           // stop getFormulaVariableMap
+
+
+        stopWatch.start("convert");
+        StringBuffer formulaBuffer = new StringBuffer(fromValue.toPlainString());
+        BigDecimal resultValue = fromValue;
+        for (int i = 0; i < rateInfoList.size(); i++) {
+            RateInfo rateInfo = rateInfoList.get(i);
+            String key = "";
+            if (rateInfo.getExchange().equals("FIAT_RATE")) {
+                if (!rateInfo.getReverse()) {
+                    key = rateInfo.getBaseCurrency() + "_in_" + rateInfo.getQuoteCurrency();
+                } else {
+                    key = rateInfo.getQuoteCurrency() + "_in_" + rateInfo.getBaseCurrency();
+                }
+            } else {
+                if (!rateInfo.getReverse()) {
+                    key = rateInfo.getExchange()
+                            + "_" + rateInfo.getBaseCurrency() + "_" + rateInfo.getQuoteCurrency();
+                } else {
+                    key = rateInfo.getExchange()
+                            + "_" + rateInfo.getQuoteCurrency() + "_" + rateInfo.getBaseCurrency();
+                }
+            }
+            FormulaVariable variable = variableMap.get(key);
+            if (variable == null) {
+                throw new RuntimeException("key not in variableMap, key :" + key);
+            }
+
+            if (!rateInfo.getReverse()) {
+                formulaBuffer.append(" * ").append(key);
+                resultValue = resultValue.multiply(variable.getValue());
+            } else {
+                formulaBuffer.append(" / ").append(key);
+                resultValue = resultValue.divide(variable.getValue(), 12, BigDecimal.ROUND_DOWN);
+            }
+        }
+        stopWatch.stop();           // stop convert
+
+        result.setCost(stopWatch.getTotalTimeMillis());
+        result.setResult(resultValue.setScale(12, BigDecimal.ROUND_DOWN).stripTrailingZeros().toPlainString());
+        result.setFormula(formulaBuffer.toString());
+        result.setContext(variableMap);
+
+        return result;
     }
 
     private Set<String> getVariableNamesFromFormula(String formula) {

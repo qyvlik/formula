@@ -12,6 +12,13 @@ public class FormulaVariable implements Serializable {
     public FormulaVariable() {
     }
 
+    public FormulaVariable(FormulaVariable other) {
+        this.name = other.getName();
+        this.value = other.getValue();
+        this.timestamp = other.getTimestamp();
+        this.timeout = other.getTimeout();
+    }
+
     public FormulaVariable(String name, BigDecimal value, Long timestamp, Long timeout) {
         this.name = name;
         this.value = value;
