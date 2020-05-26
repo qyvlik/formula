@@ -8,7 +8,6 @@ import io.github.qyvlik.formula.modules.api.entity.UpdateVariablesRequest;
 import io.github.qyvlik.formula.modules.formula.entity.FormulaResult;
 import io.github.qyvlik.formula.modules.formula.entity.FormulaVariable;
 import io.github.qyvlik.formula.modules.formula.service.FormulaCalculator;
-import io.github.qyvlik.formula.modules.formula.service.FormulaVariableService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +20,6 @@ import java.util.Set;
 public class FormulaController {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    @Autowired
-    private FormulaVariableService formulaVariableService;
     @Autowired
     private FormulaCalculator formulaCalculator;
     @Autowired
@@ -37,7 +34,7 @@ public class FormulaController {
         int count = 0;
         for (FormulaVariable formulaVariable : request.getVariables()) {
             try {
-                formulaVariableService.updateFormulaVariable(formulaVariable);
+                formulaCalculator.getFormulaVariableService().updateFormulaVariable(formulaVariable);
                 count++;
             } catch (Exception e) {
                 logger.debug("updateVariable failure name:{}, error:{}",
@@ -57,7 +54,7 @@ public class FormulaController {
         int count = 0;
         for (String variableName : request.getVariableNames()) {
             try {
-                formulaVariableService.deleteFormulaVariable(variableName);
+                formulaCalculator.getFormulaVariableService().deleteFormulaVariable(variableName);
                 count++;
             } catch (Exception e) {
                 logger.debug("deleteVariables failure name:{}, error:{}",
@@ -70,7 +67,7 @@ public class FormulaController {
 
     @RequestMapping(value = "api/v1/formula/variables/names", method = RequestMethod.GET)
     public ResponseObject<Set<String>> getFormulaVariableNames() {
-        return new ResponseObject<>(formulaVariableService.getAllVariableNames());
+        return new ResponseObject<>(formulaCalculator.getFormulaVariableService().getAllVariableNames());
     }
 
     @RequestMapping(value = "api/v1/formula/variables/alias", method = RequestMethod.GET)
@@ -86,7 +83,7 @@ public class FormulaController {
     @RequestMapping(value = "api/v1/formula/variable/{variableName}", method = RequestMethod.GET)
     public ResponseObject<FormulaVariable> getFormulaVariable(@PathVariable String variableName) {
         try {
-            FormulaVariable formulaVariable = formulaVariableService.getFormulaVariable(variableName);
+            FormulaVariable formulaVariable = formulaCalculator.getFormulaVariableService().getFormulaVariable(variableName);
             return new ResponseObject<>(formulaVariable);
         } catch (Exception e) {
             logger.debug("getFormulaVariable failure name:{}, error:{}", variableName, e.getMessage());

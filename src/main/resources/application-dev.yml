@@ -11,3 +11,6 @@ spring:
         max-active: 256
         min-idle: 1
     timeout: 30s
+
+formula:
+  variable-type: redis

@@ -100,6 +100,7 @@ public class FormulaCalculatorImpl implements FormulaCalculator {
         this.aliasMap = aliasMap;
     }
 
+    @Override
     public FormulaVariableService getFormulaVariableService() {
         return formulaVariableService;
     }
@@ -171,6 +172,8 @@ public class FormulaCalculatorImpl implements FormulaCalculator {
             case "ETH":
                 return 300;
             case "KRW":
+                return 400;
+            case "ERU":
                 return 400;
             case "HT":
                 return 500;

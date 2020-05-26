@@ -14,13 +14,19 @@ public class FormulaVariableMapImpl implements FormulaVariableService {
     @Override
     public Map<String, FormulaVariable> getFormulaVariableMap(Set<String> variableNames) {
         Map<String, FormulaVariable> tmpVarMap = Maps.newHashMap();
+        long currentTimeMillis = System.currentTimeMillis();
+
         for (String varName : variableNames) {
             FormulaVariable formulaVariable = varMap.get(varName);
-            if (formulaVariable != null) {
-                tmpVarMap.put(formulaVariable.getName(), new FormulaVariable(formulaVariable));
-            } else {
+
+            if (formulaVariable == null) {
                 throw new RuntimeException("variable " + varName + " not exist");
             }
+            if (formulaVariable.getTimestamp() + formulaVariable.getTimeout() < currentTimeMillis) {
+                throw new RuntimeException("variable "
+                        + formulaVariable.getName() + " expired");
+            }
+            tmpVarMap.put(formulaVariable.getName(), new FormulaVariable(formulaVariable));
         }
 
         return tmpVarMap;
@@ -37,7 +43,6 @@ public class FormulaVariableMapImpl implements FormulaVariableService {
 
     @Override
     public void updateFormulaVariable(FormulaVariable formulaVariable) {
-        // todo 存入反向汇率
         varMap.put(formulaVariable.getName(), formulaVariable);
     }
 

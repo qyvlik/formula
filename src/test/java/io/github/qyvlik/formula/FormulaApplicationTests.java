@@ -322,7 +322,7 @@ public class FormulaApplicationTests {
 
     @Test
     public void test005_eval_expired_variable() throws Exception {
-        long timeout = 30 * 1000L;
+        long timeout = 31 * 1000L;
         long currentTimeMillis = System.currentTimeMillis() - timeout;
 
         UpdateVariablesRequest request = new UpdateVariablesRequest();
@@ -634,6 +634,81 @@ public class FormulaApplicationTests {
         BigDecimal evalResult = new BigDecimal(evalResponseObj.getResult().toString());
 
         Assert.assertTrue("evalResult is 71000", evalResult.compareTo(new BigDecimal("71000")) == 0);
+    }
+
+    @Test
+    public void test017_update_and_convert() throws Exception {
+        long currentTimeMillis = System.currentTimeMillis();
+        long timeout = 30 * 1000L;
+
+        UpdateVariablesRequest request = new UpdateVariablesRequest();
+
+        List<FormulaVariable> variables = Lists.newLinkedList();
+
+        variables.add(new FormulaVariable(
+                "binance_btc_usdt",
+                new BigDecimal("10000"),
+                currentTimeMillis,
+                timeout
+        ));
+
+        variables.add(new FormulaVariable(
+                "binance_eth_usdt",
+                new BigDecimal("1000"),
+                currentTimeMillis,
+                timeout
+        ));
+
+        request.setVariables(variables);
+
+
+        String updateVariablesResponseString = this.mockMvc.perform(
+                post("/api/v1/formula/variables/update")
+                        .contentType(MediaType.parseMediaType("application/json;charset=UTF-8"))
+                        .header("token", token)
+                        .content(JSON.toJSONString(request))
+        ).andExpect(status().isOk())
+                .andExpect(content().contentType("application/json;charset=UTF-8"))
+                .andReturn().getResponse().getContentAsString();
+
+        ResponseObject registerResponseObj = JSON.parseObject(updateVariablesResponseString)
+                .toJavaObject(ResponseObject.class);
+
+        Assert.assertTrue(registerResponseObj.getError() == null);
+        Assert.assertTrue(registerResponseObj.getResult().toString().equalsIgnoreCase("success"));
+
+        String allVariableNames = this.mockMvc.perform(
+                get("/api/v1/formula/variables/names")
+        ).andExpect(status().isOk())
+                .andExpect(content().contentType("application/json;charset=UTF-8"))
+                .andReturn().getResponse().getContentAsString();
+
+        ResponseObject allVariableNamesResponseObj = JSON.parseObject(allVariableNames)
+                .toJavaObject(ResponseObject.class);
+
+        Assert.assertTrue(allVariableNamesResponseObj.getError() == null);
+        List<String> variableNames = ((JSONArray) allVariableNamesResponseObj.getResult()).toJavaList(String.class);
+
+        Assert.assertTrue("must contain binance_btc_usdt", variableNames.contains("binance_btc_usdt"));
+        Assert.assertTrue("must contain binance_eth_usdt", variableNames.contains("binance_eth_usdt"));
+
+        String convertResponseString = this.mockMvc.perform(
+                get("/api/v1/formula/convert?from=btc&to=eth&value=1")
+        ).andExpect(status().isOk())
+                .andExpect(content().contentType("application/json;charset=UTF-8"))
+                .andReturn().getResponse().getContentAsString();
+
+        logger.info("convertResponseString:{}", convertResponseString);
+
+        ResponseObject evalResponseObj = JSON.parseObject(convertResponseString)
+                .toJavaObject(ResponseObject.class);
+        Assert.assertTrue(evalResponseObj.getError() == null);
+
+        FormulaResult formulaResult = JSON.parseObject(evalResponseObj.getResult().toString()).toJavaObject(FormulaResult.class);
+
+        BigDecimal evalResult = new BigDecimal(formulaResult.getResult());
+
+        Assert.assertTrue("evalResult is 10", evalResult.compareTo(new BigDecimal("10")) == 0);
     }
 
 }
