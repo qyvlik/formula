@@ -156,6 +156,33 @@ public class FormulaCalculatorImpl implements FormulaCalculator {
         return formulaResult;
     }
 
+    /**
+     * small weight is shortest
+     *
+     * @param currency
+     * @return
+     */
+    private double getWeight(String currency) {
+        switch (currency.toUpperCase()) {
+            case "USDT":
+                return 100;
+            case "BTC":
+                return 200;
+            case "ETH":
+                return 300;
+            case "KRW":
+                return 400;
+            case "HT":
+                return 500;
+            case "BNB":
+                return 500;
+            case "OKB":
+                return 500;
+            default:
+                return 1000;
+        }
+    }
+
     @Override
     public FormulaResult convert(String from, String to, BigDecimal fromValue) {
         from = from.toLowerCase();
@@ -189,10 +216,14 @@ public class FormulaCalculatorImpl implements FormulaCalculator {
                     continue;
                 }
 
+                final double baseCurrencyWeight = getWeight(baseCurrency);
+                final double quoteCurrencyWeight = getWeight(quoteCurrency);
+                final double weight = Math.min(baseCurrencyWeight, quoteCurrencyWeight);
+
                 {
                     String key = baseCurrency + "_" + quoteCurrency;
                     RateEdge rateEdge = edgeMap.computeIfAbsent(key,
-                            k -> new RateEdge(key, 1.0, false));
+                            k -> new RateEdge(key, weight, false));
                     RateInfo rateInfo = new RateInfo("FIAT_RATE", baseCurrency, quoteCurrency, false);
                     rateEdge.getRates().add(rateInfo);
                     rateEdge.setReverse(false);         // 只要有正向数据，就设置为 false
@@ -201,7 +232,7 @@ public class FormulaCalculatorImpl implements FormulaCalculator {
                 {
                     String reverseKey = quoteCurrency + "_" + baseCurrency;
                     RateEdge rateEdge = edgeMap.computeIfAbsent(reverseKey,
-                            k -> new RateEdge(reverseKey, 1.0, true));
+                            k -> new RateEdge(reverseKey, weight, true));
                     RateInfo rateInfo = new RateInfo("FIAT_RATE", quoteCurrency, baseCurrency, true);
                     rateEdge.getRates().add(rateInfo);
                 }
@@ -216,10 +247,14 @@ public class FormulaCalculatorImpl implements FormulaCalculator {
                     continue;
                 }
 
+                final double baseCurrencyWeight = getWeight(baseCurrency);
+                final double quoteCurrencyWeight = getWeight(quoteCurrency);
+                final double weight = Math.min(baseCurrencyWeight, quoteCurrencyWeight);
+
                 {
                     String key = baseCurrency + "_" + quoteCurrency;
                     RateEdge rateEdge = edgeMap.computeIfAbsent(key,
-                            k -> new RateEdge(key, 1.0, false));
+                            k -> new RateEdge(key, weight, false));
                     RateInfo rateInfo = new RateInfo(exchange, baseCurrency, quoteCurrency, false);
                     rateEdge.getRates().add(rateInfo);
                     rateEdge.setReverse(false);         // 只要有正向数据，就设置为 false
@@ -228,7 +263,7 @@ public class FormulaCalculatorImpl implements FormulaCalculator {
                 {
                     String reverseKey = quoteCurrency + "_" + baseCurrency;
                     RateEdge rateEdge = edgeMap.computeIfAbsent(reverseKey,
-                            k -> new RateEdge(reverseKey, 1.0, false));
+                            k -> new RateEdge(reverseKey, weight, false));
                     RateInfo rateInfo = new RateInfo(exchange, quoteCurrency, baseCurrency, true);
                     rateEdge.getRates().add(rateInfo);
                 }
@@ -242,7 +277,13 @@ public class FormulaCalculatorImpl implements FormulaCalculator {
                     rateEdge.getBaseCurrency(), rateEdge.getQuoteCurrency());
         }
         DijkstraShortestPath<String, RateEdge> decimalDijkstraShortestPath
-                = new DijkstraShortestPath<>(graph);
+                = new DijkstraShortestPath<>(graph, new Function<RateEdge, Number>() {
+            @Override
+            public Number apply(@Nullable RateEdge rateEdge) {
+                // small weight is shortest
+                return rateEdge.getWeight();
+            }
+        });
         List<RateEdge> path = decimalDijkstraShortestPath.getPath(from, to);
 
         stopWatch.stop();               // stop getShortestPath
