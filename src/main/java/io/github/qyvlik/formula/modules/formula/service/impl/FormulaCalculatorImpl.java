@@ -292,7 +292,14 @@ public class FormulaCalculatorImpl implements FormulaCalculator {
                 return rateEdge.getWeight();
             }
         });
-        List<RateEdge> path = decimalDijkstraShortestPath.getPath(from, to);
+        List<RateEdge> path = null;
+
+        try {
+            path = decimalDijkstraShortestPath.getPath(from, to);
+        } catch (Exception e) {
+            path = Lists.newArrayList();
+            logger.error("getPath error: from:{}, to:{}", from, to);
+        }
 
         stopWatch.stop();               // stop getShortestPath
 

@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 public class FormulaCalculatorTest {
 
@@ -68,4 +69,8 @@ public class FormulaCalculatorTest {
 
     }
 
+    @Test
+    public void test() {
+        System.out.println(UUID.randomUUID().toString());
+    }
 }
