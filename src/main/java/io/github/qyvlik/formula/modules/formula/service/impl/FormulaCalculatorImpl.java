@@ -203,21 +203,26 @@ public class FormulaCalculatorImpl implements FormulaCalculator {
         for (String name : names) {
             name = name.toLowerCase();
 
+            // the top mean two thing
+            if (name.equalsIgnoreCase("huobipro_top_ht") ||
+                    name.equalsIgnoreCase("usd_in_top")) {
+                continue;
+            }
+
             String[] nameArray = name.split("_");
             if (nameArray.length != 3) {
                 continue;
             }
             // fiat rate
             if (name.contains("_in_")) {
-
                 final String baseCurrency = nameArray[0];
                 // in is nameArray[1]
                 final String quoteCurrency = nameArray[2];
 
-                if (!from.equals(baseCurrency) && !from.equals(quoteCurrency)
-                        && !to.equals(baseCurrency) && !to.equals(quoteCurrency)) {
-                    continue;
-                }
+//                if (!from.equals(baseCurrency) && !from.equals(quoteCurrency)
+//                        && !to.equals(baseCurrency) && !to.equals(quoteCurrency)) {
+//                    continue;
+//                }
 
                 final double baseCurrencyWeight = getWeight(baseCurrency);
                 final double quoteCurrencyWeight = getWeight(quoteCurrency);

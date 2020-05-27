@@ -2,6 +2,7 @@ package io.github.qyvlik.formula.modules.formula.graph;
 
 import com.google.common.collect.Lists;
 
+import java.util.Comparator;
 import java.util.List;
 
 public class RateEdge {
@@ -21,6 +22,23 @@ public class RateEdge {
         this.weight = weight;
         this.reverse = reverse;
         this.rates = Lists.newArrayList();
+    }
+
+    public static int weightOfExchange(String exchange) {
+        switch (exchange.toLowerCase()) {
+            case "huobipro":
+                return 100;
+            case "binance":
+                return 90;
+            case "okex":
+                return 80;
+            case "kraken":
+                return 70;
+            case "upbit":
+                return 60;
+            default:
+                return 10;
+        }
     }
 
     @Override
@@ -47,11 +65,39 @@ public class RateEdge {
             return null;
         }
         // todo weight for exchange
+        List<RateInfo> unReverseList = Lists.newArrayList();
+        List<RateInfo> reverseList = Lists.newArrayList();
         for (RateInfo take : this.getRates()) {
-            if (take != null && !take.getReverse()) {
-                return take;
+            if (take == null) {
+                continue;
+            }
+            if (!take.getReverse()) {
+                unReverseList.add(take);
+            } else {
+                reverseList.add(take);
             }
         }
+
+        Comparator<RateInfo> comparator = new Comparator<RateInfo>() {
+            @Override
+            public int compare(RateInfo o1, RateInfo o2) {
+                Integer o1Weight = weightOfExchange(o1.getExchange());
+                Integer o2Weight = weightOfExchange(o2.getExchange());
+                // DESC
+                return o2Weight.compareTo(o1Weight);
+            }
+        };
+
+        if (!unReverseList.isEmpty()) {
+            unReverseList.sort(comparator);
+            return unReverseList.get(0);
+        }
+
+        if (!reverseList.isEmpty()) {
+            reverseList.sort(comparator);
+            return reverseList.get(0);
+        }
+
         return this.getRates().get(0);
     }
 
