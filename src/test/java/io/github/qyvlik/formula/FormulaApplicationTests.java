@@ -663,6 +663,13 @@ public class FormulaApplicationTests {
         ));
 
         variables.add(new FormulaVariable(
+                "huobipro_btc_usdt",
+                new BigDecimal("10000"),
+                currentTimeMillis,
+                timeout
+        ));
+
+        variables.add(new FormulaVariable(
                 "binance_eth_usdt",
                 new BigDecimal("1000"),
                 currentTimeMillis,
