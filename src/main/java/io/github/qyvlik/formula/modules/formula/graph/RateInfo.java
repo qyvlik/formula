@@ -1,5 +1,10 @@
 package io.github.qyvlik.formula.modules.formula.graph;
 
+import lombok.Data;
+import lombok.ToString;
+
+@Data
+@ToString
 public class RateInfo {
     private String exchange;
     private String baseCurrency;
@@ -15,47 +20,5 @@ public class RateInfo {
 
     public RateInfo() {
 
-    }
-
-    public String getExchange() {
-        return exchange;
-    }
-
-    public void setExchange(String exchange) {
-        this.exchange = exchange;
-    }
-
-    public String getBaseCurrency() {
-        return baseCurrency;
-    }
-
-    public void setBaseCurrency(String baseCurrency) {
-        this.baseCurrency = baseCurrency;
-    }
-
-    public String getQuoteCurrency() {
-        return quoteCurrency;
-    }
-
-    public void setQuoteCurrency(String quoteCurrency) {
-        this.quoteCurrency = quoteCurrency;
-    }
-
-    public Boolean getReverse() {
-        return reverse;
-    }
-
-    public void setReverse(Boolean reverse) {
-        this.reverse = reverse;
-    }
-
-    @Override
-    public String toString() {
-        return "RateInfo{" +
-                "exchange='" + exchange + '\'' +
-                ", baseCurrency='" + baseCurrency + '\'' +
-                ", quoteCurrency='" + quoteCurrency + '\'' +
-                ", reverse=" + reverse +
-                '}';
     }
 }

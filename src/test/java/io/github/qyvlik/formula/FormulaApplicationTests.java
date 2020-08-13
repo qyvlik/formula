@@ -455,7 +455,7 @@ public class FormulaApplicationTests {
     @Test
     public void test009_black_keyword() throws Exception {
         String evalResponseString = this.mockMvc.perform(
-                get("/api/v1/formula/debug?formula=while(1);")
+                get("/api/v1/formula/debug?formula=while(1)")
         ).andExpect(status().isOk())
                 .andExpect(content().contentType("application/json;charset=UTF-8"))
                 .andReturn().getResponse().getContentAsString();
@@ -463,7 +463,11 @@ public class FormulaApplicationTests {
         ResponseObject evalResponseObj = JSON.parseObject(evalResponseString)
                 .toJavaObject(ResponseObject.class);
         Assert.assertTrue(evalResponseObj.getError() != null);
-        Assert.assertTrue(evalResponseObj.getError().getMessage().contains("black keyword"));
+        String errorMessage = evalResponseObj.getError().getMessage();
+        Assert.assertTrue(
+                errorMessage.contains("black keyword")
+                        || errorMessage.equals("Unknown function while at character position 1")
+        );
     }
 
     @Test
@@ -477,7 +481,10 @@ public class FormulaApplicationTests {
         ResponseObject evalResponseObj = JSON.parseObject(evalResponseString)
                 .toJavaObject(ResponseObject.class);
         Assert.assertTrue(evalResponseObj.getError() != null);
-        Assert.assertTrue(evalResponseObj.getError().getMessage().contains("contains black keyword: `quit`"));
+        String errorMessage = evalResponseObj.getError().getMessage();
+        Assert.assertTrue(
+                errorMessage.contains("contains black keyword: `quit`")
+                        || errorMessage.equals("Unknown function quit at character position 1"));
     }
 
     @Test
@@ -491,7 +498,10 @@ public class FormulaApplicationTests {
         ResponseObject evalResponseObj = JSON.parseObject(evalResponseString)
                 .toJavaObject(ResponseObject.class);
         Assert.assertTrue(evalResponseObj.getError() != null);
-        Assert.assertTrue(evalResponseObj.getError().getMessage().contains("contains black keyword: `exit`"));
+        String errorMessage = evalResponseObj.getError().getMessage();
+        Assert.assertTrue(
+                errorMessage.contains("contains black keyword: `exit`")
+                        || errorMessage.equals("Unknown function exit at character position 1"));
     }
 
     @Test
@@ -639,7 +649,7 @@ public class FormulaApplicationTests {
     @Test
     public void test017_update_and_convert() throws Exception {
         long currentTimeMillis = System.currentTimeMillis();
-        long timeout = 30 * 1000L;
+        long timeout = 40 * 1000L;
 
         UpdateVariablesRequest request = new UpdateVariablesRequest();
 
@@ -700,6 +710,9 @@ public class FormulaApplicationTests {
 
         ResponseObject evalResponseObj = JSON.parseObject(convertResponseString)
                 .toJavaObject(ResponseObject.class);
+        if (evalResponseObj.getError() != null) {
+            logger.error("test017_update_and_convert:{}", convertResponseString);
+        }
         Assert.assertTrue(evalResponseObj.getError() == null);
 
         FormulaResult formulaResult = JSON.parseObject(evalResponseObj.getResult().toString()).toJavaObject(FormulaResult.class);

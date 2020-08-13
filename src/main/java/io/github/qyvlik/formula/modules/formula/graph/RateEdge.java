@@ -1,10 +1,14 @@
 package io.github.qyvlik.formula.modules.formula.graph;
 
 import com.google.common.collect.Lists;
+import lombok.Data;
+import lombok.ToString;
 
 import java.util.Comparator;
 import java.util.List;
 
+@Data
+@ToString
 public class RateEdge {
     private String baseCurrency;
     private String quoteCurrency;
@@ -99,54 +103,5 @@ public class RateEdge {
         }
 
         return this.getRates().get(0);
-    }
-
-    public String getBaseCurrency() {
-        return baseCurrency;
-    }
-
-    public void setBaseCurrency(String baseCurrency) {
-        this.baseCurrency = baseCurrency;
-    }
-
-    public String getQuoteCurrency() {
-        return quoteCurrency;
-    }
-
-    public void setQuoteCurrency(String quoteCurrency) {
-        this.quoteCurrency = quoteCurrency;
-    }
-
-    public Double getWeight() {
-        return weight;
-    }
-
-    public void setWeight(Double weight) {
-        this.weight = weight;
-    }
-
-    public Boolean getReverse() {
-        return reverse;
-    }
-
-    public void setReverse(Boolean reverse) {
-        this.reverse = reverse;
-    }
-
-    public List<RateInfo> getRates() {
-        return rates;
-    }
-
-    public void setRates(List<RateInfo> rates) {
-        this.rates = rates;
-    }
-
-    @Override
-    public String toString() {
-        return "RateEdge{" +
-                "baseCurrency='" + baseCurrency + '\'' +
-                ", quoteCurrency='" + quoteCurrency + '\'' +
-                ", rates=" + rates +
-                '}';
     }
 }
