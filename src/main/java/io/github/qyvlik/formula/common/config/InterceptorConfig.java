@@ -1,6 +1,6 @@
 package io.github.qyvlik.formula.common.config;
 
-import io.github.qyvlik.formula.common.interceptor.AccessTokenAuthInterceptor;
+import io.github.qyvlik.formula.common.interceptor.OpenAccessInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -10,18 +10,12 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class InterceptorConfig implements WebMvcConfigurer {
 
     @Autowired
-    private AccessTokenAuthInterceptor accessTokenAuthInterceptor;
+    private OpenAccessInterceptor openAccessInterceptor;
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-
-        registry.addInterceptor(accessTokenAuthInterceptor)
-                .addPathPatterns("/api/v1/formula/variables/update")
-                .addPathPatterns("/api/v1/formula/variables/delete")
-                .excludePathPatterns("/api/v1/formula/variables/names")
-                .excludePathPatterns("/api/v1/formula/variables/alias")
-                .excludePathPatterns("/api/v1/formula/variable/*")
-                .excludePathPatterns("/api/v1/formula/eval")
+        registry.addInterceptor(openAccessInterceptor)
+                .addPathPatterns("/api/v1/**");
         ;
     }
 }

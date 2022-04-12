@@ -4,15 +4,15 @@ import io.github.qyvlik.formula.modules.formula.entity.FormulaResult;
 import io.github.qyvlik.formula.modules.formula.entity.FormulaVariable;
 import io.github.qyvlik.formula.modules.formula.service.impl.FormulaCalculatorImpl;
 import io.github.qyvlik.formula.modules.formula.service.impl.FormulaVariableMapImpl;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.util.UUID;
-
+import static org.junit.jupiter.api.Assertions.*;
 public class FormulaCalculatorTest {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -20,7 +20,7 @@ public class FormulaCalculatorTest {
     private FormulaCalculatorImpl formulaCalculator;
     private FormulaVariableService formulaVariableService;
 
-    @Before
+    @BeforeAll
     public void setup() {
         formulaVariableService = new FormulaVariableMapImpl();
         formulaCalculator = new FormulaCalculatorImpl();
@@ -64,7 +64,7 @@ public class FormulaCalculatorTest {
             logger.info("calculate :{}", formulaResult);
         } catch (Exception e) {
             logger.info("e", e);
-            Assert.assertTrue("", e.getMessage().toLowerCase().contains("variable huobipro_btc_usdt not exist"));
+            assertTrue(e.getMessage().toLowerCase().contains("variable huobipro_btc_usdt not exist"), "");
         }
 
     }

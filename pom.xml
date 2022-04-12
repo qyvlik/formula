@@ -5,14 +5,14 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.1.8.RELEASE</version>
+        <version>2.6.1</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>io.github.qyvlik</groupId>
     <artifactId>formula</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>v0.1.6</version>
     <name>formula</name>
-    <description>Demo project for Spring Boot</description>
+    <description>formula</description>
 
     <properties>
         <java.version>1.8</java.version>
@@ -49,7 +49,7 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>29.0-jre</version>
+            <version>31.1-jre</version>
         </dependency>
 
         <dependency>
@@ -73,7 +73,7 @@
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
-            <version>1.2.72</version>
+            <version>1.2.80</version>
         </dependency>
 
         <dependency>
@@ -85,16 +85,21 @@
         <dependency>
             <groupId>com.udojava</groupId>
             <artifactId>EvalEx</artifactId>
-            <version>2.5</version>
+            <version>2.7</version>
         </dependency>
 
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.12</version>
             <scope>provided</scope>
         </dependency>
 
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <scope>runtime</scope>
+            <optional>true</optional>
+        </dependency>
 
     </dependencies>
 
@@ -103,17 +108,7 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <!--<configuration>-->
-                <!--&lt;!&ndash; 如果没有该项配置,整个devtools不会起作用 &ndash;&gt;-->
-                <!--<fork>true</fork>-->
-                <!--</configuration>-->
-                <dependencies>
-                    <dependency>
-                        <groupId>org.springframework</groupId>
-                        <artifactId>springloaded</artifactId>
-                        <version>1.2.7.RELEASE</version>
-                    </dependency>
-                </dependencies>
+                <version>2.6.1</version>
             </plugin>
         </plugins>
     </build>

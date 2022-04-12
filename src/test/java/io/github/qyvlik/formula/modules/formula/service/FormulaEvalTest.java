@@ -6,16 +6,15 @@ import io.github.qyvlik.formula.modules.formula.entity.FormulaVariable;
 import io.github.qyvlik.formula.modules.formula.service.impl.FormulaEval;
 import jdk.nashorn.api.scripting.NashornScriptEngineFactory;
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.script.ScriptEngine;
 import java.math.BigDecimal;
 import java.util.Map;
-
+import static org.junit.jupiter.api.Assertions.*;
 public class FormulaEvalTest {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -23,7 +22,7 @@ public class FormulaEvalTest {
     private NashornScriptEngineFactory factory;
     private ScriptEngine engine;
 
-    @Before
+    @BeforeAll
     public void setup() {
         factory = new NashornScriptEngineFactory();
         engine = factory.getScriptEngine(new String[]{"-strict", "--no-java", "--no-syntax-extensions"});
@@ -53,13 +52,13 @@ public class FormulaEvalTest {
 
 
         FormulaResult formulaResult = FormulaEval.eval(formula, engine, contextMap);
-        Assert.assertNotNull("formulaResult must not null", formulaResult);
-        Assert.assertTrue("formulaResult must not null", StringUtils.isNotBlank(formulaResult.getResult()));
+        assertNotNull(formulaResult, "formulaResult must not null" );
+        assertTrue(StringUtils.isNotBlank(formulaResult.getResult()),"formulaResult must not null");
 
         BigDecimal finalResult = new BigDecimal("70700.0");
 
-        Assert.assertTrue("final result must be: " + finalResult, new BigDecimal(formulaResult.getResult()).compareTo(finalResult) == 0);
-        Assert.assertTrue("context not empty", formulaResult.getContext() != null && !formulaResult.getContext().isEmpty());
+        assertTrue(new BigDecimal(formulaResult.getResult()).compareTo(finalResult) == 0, "final result must be: " + finalResult );
+        assertTrue(formulaResult.getContext() != null && !formulaResult.getContext().isEmpty(), "context not empty");
 
         logger.info("formulaResult:{}", formulaResult);
         logger.info("formulaResult context:{}", formulaResult.getContext());
@@ -93,8 +92,8 @@ public class FormulaEvalTest {
             FormulaEval.eval(formula, engine, contextMap);
         } catch (Exception e) {
             logger.error("testFailureForContextNotExists e:", e);
-            Assert.assertTrue("message must contains `undefined` and `huobipro_btc_usdt`",
-                    e.getMessage().toLowerCase().contains("\"huobipro_btc_usdt\" is not defined"));
+            assertTrue(e.getMessage().toLowerCase().contains("\"huobipro_btc_usdt\" is not defined"),
+                    "message must contains `undefined` and `huobipro_btc_usdt`");
         }
     }
 

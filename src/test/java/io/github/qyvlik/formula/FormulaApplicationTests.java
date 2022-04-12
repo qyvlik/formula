@@ -9,12 +9,8 @@ import io.github.qyvlik.formula.modules.api.entity.DeleteVariablesRequest;
 import io.github.qyvlik.formula.modules.api.entity.UpdateVariablesRequest;
 import io.github.qyvlik.formula.modules.formula.entity.FormulaResult;
 import io.github.qyvlik.formula.modules.formula.entity.FormulaVariable;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.FixMethodOrder;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.MethodSorters;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,11 +29,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
+import static org.junit.jupiter.api.Assertions.*;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest
 @ActiveProfiles("test")
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class FormulaApplicationTests {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -49,7 +44,7 @@ public class FormulaApplicationTests {
 
     private String token;
 
-    @Before
+    @BeforeAll
     public void setup() {
         mockMvc = webAppContextSetup(this.wac).build();
         token = "ad82c6ae-f7a3-486b-b933-aa19104d8142";
@@ -66,7 +61,7 @@ public class FormulaApplicationTests {
         ResponseObject allVariableNamesResponseObj = JSON.parseObject(allVariableNames)
                 .toJavaObject(ResponseObject.class);
 
-        Assert.assertTrue(allVariableNamesResponseObj.getError() == null);
+        assertTrue(allVariableNamesResponseObj.getError() == null);
         List<String> variableNames = ((JSONArray) allVariableNamesResponseObj.getResult()).toJavaList(String.class);
 
         if (variableNames == null || variableNames.isEmpty()) {
@@ -84,9 +79,9 @@ public class FormulaApplicationTests {
             ResponseObject variableResponseObj = JSON.parseObject(variableResponseString)
                     .toJavaObject(ResponseObject.class);
 
-            Assert.assertTrue(variableResponseObj.getError() == null);
+            assertTrue(variableResponseObj.getError() == null);
 
-            Assert.assertTrue(variableResponseObj.getResult() != null);
+            assertTrue(variableResponseObj.getResult() != null);
         }
 
 
@@ -104,8 +99,8 @@ public class FormulaApplicationTests {
 
         ResponseObject deleteVariablesResponseObj = JSON.parseObject(deleteVariablesResponseString)
                 .toJavaObject(ResponseObject.class);
-        Assert.assertTrue(deleteVariablesResponseObj.getError() == null);
-        Assert.assertTrue(deleteVariablesResponseObj.getResult().toString().equalsIgnoreCase("success"));
+        assertTrue(deleteVariablesResponseObj.getError() == null);
+        assertTrue(deleteVariablesResponseObj.getResult().toString().equalsIgnoreCase("success"));
     }
 
     @Test
@@ -146,8 +141,8 @@ public class FormulaApplicationTests {
         ResponseObject registerResponseObj = JSON.parseObject(updateVariablesResponseString)
                 .toJavaObject(ResponseObject.class);
 
-        Assert.assertTrue(registerResponseObj.getError() == null);
-        Assert.assertTrue(registerResponseObj.getResult().toString().equalsIgnoreCase("success"));
+        assertTrue(registerResponseObj.getError() == null);
+        assertTrue(registerResponseObj.getResult().toString().equalsIgnoreCase("success"));
 
         String allVariableNames = this.mockMvc.perform(
                 get("/api/v1/formula/variables/names")
@@ -158,11 +153,11 @@ public class FormulaApplicationTests {
         ResponseObject allVariableNamesResponseObj = JSON.parseObject(allVariableNames)
                 .toJavaObject(ResponseObject.class);
 
-        Assert.assertTrue(allVariableNamesResponseObj.getError() == null);
+        assertTrue(allVariableNamesResponseObj.getError() == null);
         List<String> variableNames = ((JSONArray) allVariableNamesResponseObj.getResult()).toJavaList(String.class);
 
-        Assert.assertTrue("must contain huobipro_btc_usdt", variableNames.contains("huobipro_btc_usdt"));
-        Assert.assertTrue("must contain usd_in_cny", variableNames.contains("usd_in_cny"));
+        assertTrue(variableNames.contains("huobipro_btc_usdt"), "must contain huobipro_btc_usdt");
+        assertTrue(variableNames.contains("usd_in_cny"), "must contain usd_in_cny");
 
         for (String variableName : variableNames) {
             String variableResponseString = this.mockMvc.perform(
@@ -173,12 +168,12 @@ public class FormulaApplicationTests {
             ResponseObject variableResponseObj = JSON.parseObject(variableResponseString)
                     .toJavaObject(ResponseObject.class);
 
-            Assert.assertTrue(variableResponseObj.getError() == null);
-            Assert.assertTrue(variableResponseObj.getResult() != null);
+            assertTrue(variableResponseObj.getError() == null);
+            assertTrue(variableResponseObj.getResult() != null);
 
             FormulaVariable formulaVariable =
                     ((JSONObject) variableResponseObj.getResult()).toJavaObject(FormulaVariable.class);
-            Assert.assertTrue(formulaVariable.getValue().compareTo(BigDecimal.ZERO) > 0);
+            assertTrue(formulaVariable.getValue().compareTo(BigDecimal.ZERO) > 0);
         }
 
         logger.info("variableNames:{}", variableNames);
@@ -191,11 +186,11 @@ public class FormulaApplicationTests {
 
         ResponseObject evalResponseObj = JSON.parseObject(evalResponseString)
                 .toJavaObject(ResponseObject.class);
-        Assert.assertTrue(evalResponseObj.getError() == null);
+        assertTrue(evalResponseObj.getError() == null);
 
         BigDecimal evalResult = new BigDecimal(evalResponseObj.getResult().toString());
 
-        Assert.assertTrue("evalResult is 71000", evalResult.compareTo(new BigDecimal("71000")) == 0);
+        assertTrue(evalResult.compareTo(new BigDecimal("71000")) == 0, "evalResult is 71000");
     }
 
     @Test
@@ -209,7 +204,7 @@ public class FormulaApplicationTests {
         ResponseObject allVariableNamesResponseObj = JSON.parseObject(allVariableNames)
                 .toJavaObject(ResponseObject.class);
 
-        Assert.assertTrue(allVariableNamesResponseObj.getError() == null);
+        assertTrue(allVariableNamesResponseObj.getError() == null);
         List<String> variableNames = ((JSONArray) allVariableNamesResponseObj.getResult()).toJavaList(String.class);
 
         if (variableNames == null || variableNames.isEmpty()) {
@@ -231,7 +226,7 @@ public class FormulaApplicationTests {
 
         ResponseObject deleteVariablesResponseObj = JSON.parseObject(deleteVariablesResponseString)
                 .toJavaObject(ResponseObject.class);
-        Assert.assertTrue(deleteVariablesResponseObj.getError() != null);
+        assertTrue(deleteVariablesResponseObj.getError() != null);
     }
 
     @Test
@@ -272,8 +267,8 @@ public class FormulaApplicationTests {
         ResponseObject registerResponseObj = JSON.parseObject(updateVariablesResponseString)
                 .toJavaObject(ResponseObject.class);
 
-        Assert.assertTrue(registerResponseObj.getError() == null);
-        Assert.assertTrue(registerResponseObj.getResult().toString().equalsIgnoreCase("success"));
+        assertTrue(registerResponseObj.getError() == null);
+        assertTrue(registerResponseObj.getResult().toString().equalsIgnoreCase("success"));
 
         String allVariableNames = this.mockMvc.perform(
                 get("/api/v1/formula/variables/names")
@@ -284,11 +279,11 @@ public class FormulaApplicationTests {
         ResponseObject allVariableNamesResponseObj = JSON.parseObject(allVariableNames)
                 .toJavaObject(ResponseObject.class);
 
-        Assert.assertTrue(allVariableNamesResponseObj.getError() == null);
+        assertTrue(allVariableNamesResponseObj.getError() == null);
         List<String> variableNames = ((JSONArray) allVariableNamesResponseObj.getResult()).toJavaList(String.class);
 
-        Assert.assertTrue("must contain huobipro_btc_usdt", variableNames.contains("huobipro_btc_usdt"));
-        Assert.assertTrue("must contain usd_in_cny", variableNames.contains("usd_in_cny"));
+        assertTrue(variableNames.contains("huobipro_btc_usdt"), "must contain huobipro_btc_usdt");
+        assertTrue(variableNames.contains("usd_in_cny"), "must contain usd_in_cny");
 
         for (String variableName : variableNames) {
             String variableResponseString = this.mockMvc.perform(
@@ -299,12 +294,12 @@ public class FormulaApplicationTests {
             ResponseObject variableResponseObj = JSON.parseObject(variableResponseString)
                     .toJavaObject(ResponseObject.class);
 
-            Assert.assertTrue(variableResponseObj.getError() == null);
-            Assert.assertTrue(variableResponseObj.getResult() != null);
+            assertTrue(variableResponseObj.getError() == null);
+            assertTrue(variableResponseObj.getResult() != null);
 
             FormulaVariable formulaVariable =
                     ((JSONObject) variableResponseObj.getResult()).toJavaObject(FormulaVariable.class);
-            Assert.assertTrue(formulaVariable.getValue().compareTo(BigDecimal.ZERO) > 0);
+            assertTrue(formulaVariable.getValue().compareTo(BigDecimal.ZERO) > 0);
         }
 
         logger.info("variableNames:{}", variableNames);
@@ -317,7 +312,7 @@ public class FormulaApplicationTests {
 
         ResponseObject evalResponseObj = JSON.parseObject(evalResponseString)
                 .toJavaObject(ResponseObject.class);
-        Assert.assertTrue(evalResponseObj.getError() != null);
+        assertTrue(evalResponseObj.getError() != null);
     }
 
     @Test
@@ -357,8 +352,8 @@ public class FormulaApplicationTests {
         ResponseObject registerResponseObj = JSON.parseObject(updateVariablesResponseString)
                 .toJavaObject(ResponseObject.class);
 
-        Assert.assertTrue(registerResponseObj.getError() == null);
-        Assert.assertTrue(registerResponseObj.getResult().toString().equalsIgnoreCase("success"));
+        assertTrue(registerResponseObj.getError() == null);
+        assertTrue(registerResponseObj.getResult().toString().equalsIgnoreCase("success"));
 
         String allVariableNames = this.mockMvc.perform(
                 get("/api/v1/formula/variables/names")
@@ -369,11 +364,11 @@ public class FormulaApplicationTests {
         ResponseObject allVariableNamesResponseObj = JSON.parseObject(allVariableNames)
                 .toJavaObject(ResponseObject.class);
 
-        Assert.assertTrue(allVariableNamesResponseObj.getError() == null);
+        assertTrue(allVariableNamesResponseObj.getError() == null);
         List<String> variableNames = ((JSONArray) allVariableNamesResponseObj.getResult()).toJavaList(String.class);
 
-        Assert.assertTrue("must contain huobipro_btc_usdt", variableNames.contains("huobipro_btc_usdt"));
-        Assert.assertTrue("must contain usd_in_cny", variableNames.contains("usd_in_cny"));
+        assertTrue(variableNames.contains("huobipro_btc_usdt"), "must contain huobipro_btc_usdt");
+        assertTrue(variableNames.contains("usd_in_cny"), "must contain usd_in_cny" );
 
         for (String variableName : variableNames) {
             String variableResponseString = this.mockMvc.perform(
@@ -384,12 +379,12 @@ public class FormulaApplicationTests {
             ResponseObject variableResponseObj = JSON.parseObject(variableResponseString)
                     .toJavaObject(ResponseObject.class);
 
-            Assert.assertTrue(variableResponseObj.getError() == null);
-            Assert.assertTrue(variableResponseObj.getResult() != null);
+            assertTrue(variableResponseObj.getError() == null);
+            assertTrue(variableResponseObj.getResult() != null);
 
             FormulaVariable formulaVariable =
                     ((JSONObject) variableResponseObj.getResult()).toJavaObject(FormulaVariable.class);
-            Assert.assertTrue(formulaVariable.getValue().compareTo(BigDecimal.ZERO) > 0);
+            assertTrue(formulaVariable.getValue().compareTo(BigDecimal.ZERO) > 0);
             logger.info("formulaVariable:{}", formulaVariable);
         }
 
@@ -403,8 +398,8 @@ public class FormulaApplicationTests {
 
         ResponseObject evalResponseObj = JSON.parseObject(evalResponseString)
                 .toJavaObject(ResponseObject.class);
-        Assert.assertTrue(evalResponseObj.getError() != null);
-        Assert.assertTrue(evalResponseObj.getError().getMessage().contains("expired"));
+        assertTrue(evalResponseObj.getError() != null);
+        assertTrue(evalResponseObj.getError().getMessage().contains("expired"));
     }
 
     @Test
@@ -417,7 +412,7 @@ public class FormulaApplicationTests {
 
         ResponseObject evalResponseObj = JSON.parseObject(evalResponseString)
                 .toJavaObject(ResponseObject.class);
-        Assert.assertTrue(evalResponseObj.getError() == null);
+        assertTrue(evalResponseObj.getError() == null);
         FormulaResult formulaResult = ((JSONObject) evalResponseObj.getResult()).toJavaObject(FormulaResult.class);
         logger.info("formulaResult:{}", formulaResult);
     }
@@ -432,7 +427,7 @@ public class FormulaApplicationTests {
 
         ResponseObject evalResponseObj = JSON.parseObject(evalResponseString)
                 .toJavaObject(ResponseObject.class);
-        Assert.assertTrue(evalResponseObj.getError() == null);
+        assertTrue(evalResponseObj.getError() == null);
         FormulaResult formulaResult = ((JSONObject) evalResponseObj.getResult()).toJavaObject(FormulaResult.class);
         logger.info("formulaResult:{}", formulaResult);
     }
@@ -447,7 +442,7 @@ public class FormulaApplicationTests {
 
         ResponseObject evalResponseObj = JSON.parseObject(evalResponseString)
                 .toJavaObject(ResponseObject.class);
-        Assert.assertTrue(evalResponseObj.getError() == null);
+        assertTrue(evalResponseObj.getError() == null);
         FormulaResult formulaResult = ((JSONObject) evalResponseObj.getResult()).toJavaObject(FormulaResult.class);
         logger.info("formulaResult:{}", formulaResult);
     }
@@ -462,9 +457,9 @@ public class FormulaApplicationTests {
 
         ResponseObject evalResponseObj = JSON.parseObject(evalResponseString)
                 .toJavaObject(ResponseObject.class);
-        Assert.assertTrue(evalResponseObj.getError() != null);
+        assertTrue(evalResponseObj.getError() != null);
         String errorMessage = evalResponseObj.getError().getMessage();
-        Assert.assertTrue(
+        assertTrue(
                 errorMessage.contains("black keyword")
                         || errorMessage.equals("Unknown function while at character position 1")
         );
@@ -480,9 +475,9 @@ public class FormulaApplicationTests {
 
         ResponseObject evalResponseObj = JSON.parseObject(evalResponseString)
                 .toJavaObject(ResponseObject.class);
-        Assert.assertTrue(evalResponseObj.getError() != null);
+        assertTrue(evalResponseObj.getError() != null);
         String errorMessage = evalResponseObj.getError().getMessage();
-        Assert.assertTrue(
+        assertTrue(
                 errorMessage.contains("contains black keyword: `quit`")
                         || errorMessage.equals("Unknown function quit at character position 1"));
     }
@@ -497,9 +492,9 @@ public class FormulaApplicationTests {
 
         ResponseObject evalResponseObj = JSON.parseObject(evalResponseString)
                 .toJavaObject(ResponseObject.class);
-        Assert.assertTrue(evalResponseObj.getError() != null);
+        assertTrue(evalResponseObj.getError() != null);
         String errorMessage = evalResponseObj.getError().getMessage();
-        Assert.assertTrue(
+        assertTrue(
                 errorMessage.contains("contains black keyword: `exit`")
                         || errorMessage.equals("Unknown function exit at character position 1"));
     }
@@ -514,7 +509,7 @@ public class FormulaApplicationTests {
 
         ResponseObject evalResponseObj = JSON.parseObject(evalResponseString)
                 .toJavaObject(ResponseObject.class);
-        Assert.assertTrue(evalResponseObj.getError() == null);
+        assertTrue(evalResponseObj.getError() == null);
     }
 
     @Test
@@ -527,7 +522,7 @@ public class FormulaApplicationTests {
 
         ResponseObject evalResponseObj = JSON.parseObject(evalResponseString)
                 .toJavaObject(ResponseObject.class);
-        Assert.assertTrue(evalResponseObj.getError() != null);
+        assertTrue(evalResponseObj.getError() != null);
     }
 
     @Test
@@ -540,7 +535,7 @@ public class FormulaApplicationTests {
 
         ResponseObject evalResponseObj = JSON.parseObject(evalResponseString)
                 .toJavaObject(ResponseObject.class);
-        Assert.assertTrue(evalResponseObj.getError() == null);
+        assertTrue(evalResponseObj.getError() == null);
     }
 
     @Test
@@ -553,7 +548,7 @@ public class FormulaApplicationTests {
 
         ResponseObject evalResponseObj = JSON.parseObject(evalResponseString)
                 .toJavaObject(ResponseObject.class);
-        Assert.assertTrue(evalResponseObj.getError() == null);
+        assertTrue(evalResponseObj.getError() == null);
     }
 
     @Test
@@ -594,8 +589,8 @@ public class FormulaApplicationTests {
         ResponseObject registerResponseObj = JSON.parseObject(updateVariablesResponseString)
                 .toJavaObject(ResponseObject.class);
 
-        Assert.assertTrue(registerResponseObj.getError() == null);
-        Assert.assertTrue(registerResponseObj.getResult().toString().equalsIgnoreCase("success"));
+        assertTrue(registerResponseObj.getError() == null);
+        assertTrue(registerResponseObj.getResult().toString().equalsIgnoreCase("success"));
 
         String allVariableNames = this.mockMvc.perform(
                 get("/api/v1/formula/variables/names")
@@ -606,11 +601,11 @@ public class FormulaApplicationTests {
         ResponseObject allVariableNamesResponseObj = JSON.parseObject(allVariableNames)
                 .toJavaObject(ResponseObject.class);
 
-        Assert.assertTrue(allVariableNamesResponseObj.getError() == null);
+        assertTrue(allVariableNamesResponseObj.getError() == null);
         List<String> variableNames = ((JSONArray) allVariableNamesResponseObj.getResult()).toJavaList(String.class);
 
-        Assert.assertTrue("must contain binance_btc_usdt", variableNames.contains("binance_btc_usdt"));
-        Assert.assertTrue("must contain usd_in_cny", variableNames.contains("usd_in_cny"));
+        assertTrue(variableNames.contains("binance_btc_usdt"), "must contain binance_btc_usdt");
+        assertTrue(variableNames.contains("usd_in_cny"), "must contain usd_in_cny");
 
         for (String variableName : variableNames) {
             String variableResponseString = this.mockMvc.perform(
@@ -621,12 +616,12 @@ public class FormulaApplicationTests {
             ResponseObject variableResponseObj = JSON.parseObject(variableResponseString)
                     .toJavaObject(ResponseObject.class);
 
-            Assert.assertTrue(variableResponseObj.getError() == null);
-            Assert.assertTrue(variableResponseObj.getResult() != null);
+            assertTrue(variableResponseObj.getError() == null);
+            assertTrue(variableResponseObj.getResult() != null);
 
             FormulaVariable formulaVariable =
                     ((JSONObject) variableResponseObj.getResult()).toJavaObject(FormulaVariable.class);
-            Assert.assertTrue(formulaVariable.getValue().compareTo(BigDecimal.ZERO) > 0);
+            assertTrue(formulaVariable.getValue().compareTo(BigDecimal.ZERO) > 0);
         }
 
         logger.info("variableNames:{}", variableNames);
@@ -639,11 +634,11 @@ public class FormulaApplicationTests {
 
         ResponseObject evalResponseObj = JSON.parseObject(evalResponseString)
                 .toJavaObject(ResponseObject.class);
-        Assert.assertTrue(evalResponseObj.getError() == null);
+        assertTrue(evalResponseObj.getError() == null);
 
         BigDecimal evalResult = new BigDecimal(evalResponseObj.getResult().toString());
 
-        Assert.assertTrue("evalResult is 71000", evalResult.compareTo(new BigDecimal("71000")) == 0);
+        assertTrue(evalResult.compareTo(new BigDecimal("71000")) == 0, "evalResult is 71000");
     }
 
     @Test
@@ -691,8 +686,8 @@ public class FormulaApplicationTests {
         ResponseObject registerResponseObj = JSON.parseObject(updateVariablesResponseString)
                 .toJavaObject(ResponseObject.class);
 
-        Assert.assertTrue(registerResponseObj.getError() == null);
-        Assert.assertTrue(registerResponseObj.getResult().toString().equalsIgnoreCase("success"));
+        assertTrue(registerResponseObj.getError() == null);
+        assertTrue(registerResponseObj.getResult().toString().equalsIgnoreCase("success"));
 
         String allVariableNames = this.mockMvc.perform(
                 get("/api/v1/formula/variables/names")
@@ -703,11 +698,11 @@ public class FormulaApplicationTests {
         ResponseObject allVariableNamesResponseObj = JSON.parseObject(allVariableNames)
                 .toJavaObject(ResponseObject.class);
 
-        Assert.assertTrue(allVariableNamesResponseObj.getError() == null);
+        assertTrue(allVariableNamesResponseObj.getError() == null);
         List<String> variableNames = ((JSONArray) allVariableNamesResponseObj.getResult()).toJavaList(String.class);
 
-        Assert.assertTrue("must contain binance_btc_usdt", variableNames.contains("binance_btc_usdt"));
-        Assert.assertTrue("must contain binance_eth_usdt", variableNames.contains("binance_eth_usdt"));
+        assertTrue(variableNames.contains("binance_btc_usdt"), "must contain binance_btc_usdt");
+        assertTrue(variableNames.contains("binance_eth_usdt"), "must contain binance_eth_usdt");
 
         String convertResponseString = this.mockMvc.perform(
                 get("/api/v1/formula/convert?from=btc&to=eth&value=1")
@@ -720,13 +715,13 @@ public class FormulaApplicationTests {
         if (evalResponseObj.getError() != null) {
             logger.error("test017_update_and_convert:{}", convertResponseString);
         }
-        Assert.assertTrue(evalResponseObj.getError() == null);
+        assertTrue(evalResponseObj.getError() == null);
 
         FormulaResult formulaResult = JSON.parseObject(evalResponseObj.getResult().toString()).toJavaObject(FormulaResult.class);
 
         BigDecimal evalResult = new BigDecimal(formulaResult.getResult());
 
-        Assert.assertTrue("evalResult is 10", evalResult.compareTo(new BigDecimal("10")) == 0);
+        assertTrue(evalResult.compareTo(new BigDecimal("10")) == 0, "evalResult is 10");
     }
 
 }

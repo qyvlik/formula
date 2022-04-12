@@ -2,13 +2,14 @@ package io.github.qyvlik.formula.modules.formula.service;
 
 import com.google.common.collect.Sets;
 import com.udojava.evalex.Expression;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Set;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class EvalExTests {
     private Logger logger = LoggerFactory.getLogger(getClass());
@@ -23,7 +24,7 @@ public class EvalExTests {
         List<String> variables = expression.getUsedVariables();
         logger.info("variables:{}", variables);
         for (String var : variables) {
-            Assert.assertTrue(variableSet.contains(var));
+            assertTrue(variableSet.contains(var));
         }
     }
 

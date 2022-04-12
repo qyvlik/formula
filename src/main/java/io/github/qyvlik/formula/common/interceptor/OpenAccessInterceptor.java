@@ -1,7 +1,8 @@
 package io.github.qyvlik.formula.common.interceptor;
 
 import com.alibaba.fastjson.JSON;
-import io.github.qyvlik.formula.common.base.ResponseObject;
+import io.github.qyvlik.formula.common.base.Code;
+import io.github.qyvlik.formula.common.base.Result;
 import io.github.qyvlik.formula.common.properties.FormulaProperties;
 import io.github.qyvlik.formula.common.utils.ServletUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -13,7 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 @Service
-public class AccessTokenAuthInterceptor implements HandlerInterceptor {
+public class OpenAccessInterceptor implements HandlerInterceptor {
 
     @Autowired
     private FormulaProperties formulaProperties;
@@ -31,9 +32,8 @@ public class AccessTokenAuthInterceptor implements HandlerInterceptor {
 
         String uri = httpServletRequest.getRequestURI();
 
-        ResponseObject<String> responseObject =
-                new ResponseObject<>(400, uri + " need `token` header");
-        ServletUtils.writeJsonString(httpServletResponse, JSON.toJSONString(responseObject));
+        ServletUtils.writeJsonString(httpServletResponse,
+                JSON.toJSONString(Result.failure(Code.FORBIDDEN, uri + " need `token` header")));
 
         return false;
     }
