@@ -12,7 +12,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 @Slf4j
-class FormulaCalculator1Test {
+class FormulaCalculatorTest {
     private final VariableService variableService = new VariableService() {
         @Override
         public CalculateVariable getVariableValue(String variable) {
@@ -35,14 +35,14 @@ class FormulaCalculator1Test {
     @Test
     public void testBlank() {
         CalculateContext context = new CalculateContext(variableService);
-        FormulaCalculator1 calculator1 = new FormulaCalculator1();
+        FormulaCalculator calculator1 = new FormulaCalculator();
         calculator1.calculate("", context);
     }
 
     @Test
     public void testCalculate() {
         CalculateContext context = new CalculateContext(variableService);
-        FormulaCalculator1 calculator1 = new FormulaCalculator1();
+        FormulaCalculator calculator1 = new FormulaCalculator();
         CalculateResultData result = calculator1.calculate("1*1", context);
         log.info("result= {}", result);
     }
@@ -51,7 +51,7 @@ class FormulaCalculator1Test {
     public void testCalculateVariable() {
         CalculateContext context = new CalculateContext(variableService);
 
-        FormulaCalculator1 calculator1 = new FormulaCalculator1();
+        FormulaCalculator calculator1 = new FormulaCalculator();
         CalculateResultData result = calculator1.calculate("a*b", context);
         log.info("result= {}", result);
     }
@@ -60,7 +60,7 @@ class FormulaCalculator1Test {
     public void testCalculateFunction() {
         CalculateContext context = new CalculateContext(variableService);
 
-        FormulaCalculator1 calculator1 = new FormulaCalculator1();
+        FormulaCalculator calculator1 = new FormulaCalculator();
 
         CalculateResultData result = calculator1.calculate("max(a-b, a+b)", context);
         log.info("result= {}", result);

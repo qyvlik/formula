@@ -131,19 +131,4 @@ public class CurrencyConverterImpl implements CurrencyConverter {
         }
         return null;
     }
-
-//    private MarketPrice getMarketPriceByExchangePriority(String base, String quote, List<String> exchanges) {
-//        final String symbol = (base + "_" + quote).toLowerCase();
-//        Map<String, MarketPrice> map = prices.get(symbol);
-//        if (CollectionUtils.isEmpty(map)) {
-//            return null;
-//        }
-//        for (String exchange : exchanges) {
-//            if (map.containsKey(exchange)) {
-//                return map.get(exchange);
-//            }
-//        }
-//        return map.values().stream().iterator().next();
-//    }
-
 }

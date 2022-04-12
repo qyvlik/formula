@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Set;
 
 @Slf4j
-public class FormulaCalculator1 {
+public class FormulaCalculator {
 
     public static final Expression CONSTANT_EXPRESSION = new Expression("1");
 
@@ -46,7 +46,7 @@ public class FormulaCalculator1 {
         BigDecimal result = null;
 
         try {
-            result = expression.eval();
+            result = expression.eval(false);
         } catch (Exception e) {
             throw AppException.create(Code.ILLEGAL_PARAM, e);
         }
@@ -54,7 +54,7 @@ public class FormulaCalculator1 {
         CalculateResultData resultData = new CalculateResultData();
         resultData.setOrigin(originFormula);
         resultData.setFormula(formula);
-        resultData.setResult(result);
+        resultData.setResult(new BigDecimal(result.stripTrailingZeros().toPlainString()));
         resultData.setVariables(variables);
 
         return resultData;

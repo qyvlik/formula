@@ -12,4 +12,4 @@ redis:
   prefix: formula/dev/
 
 formula:
-  variable-type: redis
+  variable-type: memory
