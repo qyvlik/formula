@@ -1,13 +1,16 @@
-# formula
-FROM maven:alpine as builder
+FROM maven:3-jdk-8 as builder
 
-ADD ./pom.xml pom.xml
+WORKDIR /home/www/formula
 
-ADD ./src src/
+ADD pom.xml /home/www/formula
 
-VOLUME /var/maven/.m2
+RUN ["/usr/local/bin/mvn-entrypoint.sh", "mvn", "verify", "clean", "--fail-never"]
 
-RUN mvn -DskipTests clean package
+ADD . /home/www/formula
+
+RUN mvn -DskipTests package
+
+# https://stackoverflow.com/questions/42208442/maven-docker-cache-dependencies
 
 FROM openjdk:8-alpine
 
@@ -32,9 +35,9 @@ VOLUME /tmp
 WORKDIR /home/www
 
 RUN adduser -D -u 1000 www www \
-    && chown www:www -R /home/www \
+    && chown www:www -R /home/www
 
-COPY --from=builder target/*.jar formula.jar
+COPY --from=builder /home/www/formula/target/*.jar formula.jar
 
 EXPOSE 8120
 
