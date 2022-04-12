@@ -5,7 +5,6 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 
-@Builder
 @Data
 public class ProcessingPrice {
     private MarketPrice market;

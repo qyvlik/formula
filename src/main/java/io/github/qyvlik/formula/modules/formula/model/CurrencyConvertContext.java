@@ -23,22 +23,22 @@ public class CurrencyConvertContext {
     public ProcessingPrice getProcessingPrice(String source, String target, List<String> exchanges) {
         MarketPrice p1 = getMarketPrice(source, target, exchanges);
         if (p1 != null) {
-            return ProcessingPrice.builder()
-                    .market(p1)
-                    .source(source)
-                    .target(target)
-                    .price(p1.getPrice())
-                    .build();
+            ProcessingPrice processingPrice = new ProcessingPrice();
+            processingPrice.setMarket(p1);
+            processingPrice.setSource(source);
+            processingPrice.setTarget(target);
+            processingPrice.setPrice(p1.getPrice());
+            return processingPrice;
         }
         MarketPrice p2 = getMarketPrice(target, source, exchanges);
         if (p2 != null) {
             final BigDecimal price = BigDecimal.ONE.divide(p2.getPrice(), scale, RoundingMode.DOWN);
-            return ProcessingPrice.builder()
-                    .market(p2)
-                    .source(source)
-                    .target(target)
-                    .price(price)
-                    .build();
+            ProcessingPrice processingPrice = new ProcessingPrice();
+            processingPrice.setMarket(p2);
+            processingPrice.setSource(source);
+            processingPrice.setTarget(target);
+            processingPrice.setPrice(price);
+            return processingPrice;
         }
         return null;
     }
