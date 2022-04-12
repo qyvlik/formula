@@ -11,6 +11,8 @@ import io.github.qyvlik.formula.modules.formula.model.CalculateVariable;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.Set;
 
@@ -23,7 +25,7 @@ public class FormulaCalculator {
 
         String formula = originFormula.toLowerCase().replaceAll("\\s+", "");
 
-        Expression expression = new Expression(originFormula);
+        Expression expression = new Expression(originFormula, new MathContext(34, RoundingMode.DOWN));
 
         // 将函数转换成大写
         for (final String upperFunctionName : CONSTANT_EXPRESSION.getDeclaredFunctions()) {
