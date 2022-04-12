@@ -7,10 +7,6 @@ import java.math.BigDecimal;
 @Data
 public class MarketPrice {
     /**
-     * 变量名称
-     */
-    private String name;
-    /**
      * 交易所
      */
     private String exchange;
@@ -31,7 +27,7 @@ public class MarketPrice {
      */
     private String quote;
     /**
-     * 最新价格
+     * 最新价格, todo last
      */
     private BigDecimal price;
     /**

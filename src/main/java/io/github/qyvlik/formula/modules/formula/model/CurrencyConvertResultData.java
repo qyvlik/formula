@@ -51,7 +51,7 @@ public class CurrencyConvertResultData {
         List<String> array = Lists.newArrayList();
         for (ProcessingPrice priceVO : path) {
             String priceStr = priceVO.getPrice().stripTrailingZeros().toPlainString();
-            String pair = priceVO.getMarket().getSymbol();
+            String pair = priceVO.getMarket().getBase() + "_" + priceVO.getMarket().getQuote();
             String last = priceVO.getMarket().getPrice().stripTrailingZeros().toPlainString();
             array.add(priceVO.getSource() + "->" + priceVO.getTarget() + "(" + priceStr + ", " + pair + ":" + last + ")");
         }

@@ -5,7 +5,5 @@ import io.github.qyvlik.formula.modules.formula.model.CurrencyConvertResultData;
 
 public interface CurrencyConverter {
 
-
-
     CurrencyConvertResultData currencyConvert(CurrencyConvertCmd cmd);
 }

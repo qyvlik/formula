@@ -1,12 +1,18 @@
 package io.github.qyvlik.formula.modules.formula.model;
 
 import com.google.common.collect.Maps;
+import io.github.qyvlik.formula.modules.formula.service.VariableService;
 
 import java.util.Map;
 
 public class CalculateContext {
 
     private final Map<String, CalculateVariable> cache = Maps.newHashMap();
+    private final VariableService variableService;
+
+    public CalculateContext(VariableService variableService) {
+        this.variableService = variableService;
+    }
 
     // ${exchange}_${base}_${quote}
     public CalculateVariable getVariableValue(String variable) {
@@ -21,6 +27,6 @@ public class CalculateContext {
     }
 
     private CalculateVariable loadFromDB(String variable) {
-        return null;
+        return variableService.getVariableValue(variable);
     }
 }

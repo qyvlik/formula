@@ -5,8 +5,8 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
 import io.github.qyvlik.formula.common.base.ResponseObject;
-import io.github.qyvlik.formula.modules.api.entity.DeleteVariablesRequest;
-import io.github.qyvlik.formula.modules.api.entity.UpdateVariablesRequest;
+import io.github.qyvlik.formula.modules.api.entity.DeleteVariablesReq;
+import io.github.qyvlik.formula.modules.api.entity.UpdateVariablesReq;
 import io.github.qyvlik.formula.modules.formula.entity.FormulaResult;
 import io.github.qyvlik.formula.modules.formula.entity.FormulaVariable;
 import org.junit.jupiter.api.BeforeAll;
@@ -17,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -85,7 +84,7 @@ public class FormulaApplicationTests {
         }
 
 
-        DeleteVariablesRequest deleteVariablesRequest = new DeleteVariablesRequest();
+        DeleteVariablesReq deleteVariablesRequest = new DeleteVariablesReq();
         deleteVariablesRequest.setVariableNames(variableNames);
 
         String deleteVariablesResponseString = this.mockMvc.perform(
@@ -109,7 +108,7 @@ public class FormulaApplicationTests {
         long currentTimeMillis = System.currentTimeMillis();
         long timeout = 30 * 1000L;
 
-        UpdateVariablesRequest request = new UpdateVariablesRequest();
+        UpdateVariablesReq request = new UpdateVariablesReq();
 
         List<FormulaVariable> variables = Lists.newLinkedList();
 
@@ -213,13 +212,13 @@ public class FormulaApplicationTests {
 
         logger.info("delete variable names:{}", variableNames);
 
-        DeleteVariablesRequest deleteVariablesRequest = new DeleteVariablesRequest();
-        deleteVariablesRequest.setVariableNames(variableNames);
+        DeleteVariablesReq deleteVariablesReq = new DeleteVariablesReq();
+        deleteVariablesReq.setVariableNames(variableNames);
 
         String deleteVariablesResponseString = this.mockMvc.perform(
                 post("/api/v1/formula/variables/delete")
                         .contentType(MediaType.parseMediaType("application/json;charset=UTF-8"))
-                        .content(JSON.toJSONString(deleteVariablesRequest))
+                        .content(JSON.toJSONString(deleteVariablesReq))
         ).andExpect(status().isOk())
                 .andExpect(content().contentType("application/json;charset=UTF-8"))
                 .andReturn().getResponse().getContentAsString();
@@ -235,7 +234,7 @@ public class FormulaApplicationTests {
         long currentTimeMillis = System.currentTimeMillis();
         long timeout = 30 * 1000L;
 
-        UpdateVariablesRequest request = new UpdateVariablesRequest();
+        UpdateVariablesReq request = new UpdateVariablesReq();
 
         List<FormulaVariable> variables = Lists.newLinkedList();
 
@@ -320,7 +319,7 @@ public class FormulaApplicationTests {
         long timeout = 31 * 1000L;
         long currentTimeMillis = System.currentTimeMillis() - timeout;
 
-        UpdateVariablesRequest request = new UpdateVariablesRequest();
+        UpdateVariablesReq request = new UpdateVariablesReq();
 
         List<FormulaVariable> variables = Lists.newLinkedList();
 
@@ -526,19 +525,6 @@ public class FormulaApplicationTests {
     }
 
     @Test
-    public void test014_get_alias() throws Exception {
-        String evalResponseString = this.mockMvc.perform(
-                get("/api/v1/formula/variables/alias")
-        ).andExpect(status().isOk())
-                .andExpect(content().contentType("application/json;charset=UTF-8"))
-                .andReturn().getResponse().getContentAsString();
-
-        ResponseObject evalResponseObj = JSON.parseObject(evalResponseString)
-                .toJavaObject(ResponseObject.class);
-        assertTrue(evalResponseObj.getError() == null);
-    }
-
-    @Test
     public void test015_eval_math_min() throws Exception {
         String evalResponseString = this.mockMvc.perform(
                 get("/api/v1/formula/debug?formula=min(1, 2)")
@@ -557,7 +543,7 @@ public class FormulaApplicationTests {
         long currentTimeMillis = System.currentTimeMillis();
         long timeout = 30 * 1000L;
 
-        UpdateVariablesRequest request = new UpdateVariablesRequest();
+        UpdateVariablesReq request = new UpdateVariablesReq();
 
         List<FormulaVariable> variables = Lists.newLinkedList();
 
@@ -646,7 +632,7 @@ public class FormulaApplicationTests {
         long currentTimeMillis = System.currentTimeMillis();
         long timeout = 40 * 1000L;
 
-        UpdateVariablesRequest request = new UpdateVariablesRequest();
+        UpdateVariablesReq request = new UpdateVariablesReq();
 
         List<FormulaVariable> variables = Lists.newLinkedList();
 

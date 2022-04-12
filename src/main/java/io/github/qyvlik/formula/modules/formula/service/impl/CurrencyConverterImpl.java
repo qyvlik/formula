@@ -1,32 +1,32 @@
 package io.github.qyvlik.formula.modules.formula.service.impl;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import io.github.qyvlik.formula.modules.formula.cmd.CurrencyConvertCmd;
 import io.github.qyvlik.formula.modules.formula.model.CurrencyConvertResultData;
 import io.github.qyvlik.formula.modules.formula.model.MarketPrice;
 import io.github.qyvlik.formula.modules.formula.model.ProcessingPrice;
 import io.github.qyvlik.formula.modules.formula.service.CurrencyConverter;
+import io.github.qyvlik.formula.modules.formula.service.VariableService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentMap;
 
 @Slf4j
 @Service
 public class CurrencyConverterImpl implements CurrencyConverter {
     public static final int MAX_PRICE_SCALE = 18;
 
-    /**
-     * struct: < symbol, < exchange, MarketPrice > >
-     */
-    private final ConcurrentMap<String, Map<String, MarketPrice>> prices = Maps.newConcurrentMap();
+    private VariableService variableService;
+
+    public CurrencyConverterImpl(@Autowired VariableService variableService) {
+        this.variableService = variableService;
+    }
 
     @Override
     public CurrencyConvertResultData currencyConvert(CurrencyConvertCmd cmd) {
@@ -110,8 +110,7 @@ public class CurrencyConverterImpl implements CurrencyConverter {
     }
 
     private ProcessingPrice getProcessingPrice(String source, String target, List<String> exchanges) {
-        final String sourceTarget = (source + "_" + target).toLowerCase();
-        MarketPrice p1 = getMarketPriceByExchangePriority(sourceTarget, exchanges);
+        MarketPrice p1 = variableService.getMarketPriceByExchangePriority(source, target, exchanges);
         if (p1 != null) {
             return ProcessingPrice.builder()
                     .market(p1)
@@ -120,8 +119,7 @@ public class CurrencyConverterImpl implements CurrencyConverter {
                     .price(p1.getPrice())
                     .build();
         }
-        final String targetSource = (target + "_" + source).toLowerCase();
-        MarketPrice p2 = getMarketPriceByExchangePriority(targetSource, exchanges);
+        MarketPrice p2 = variableService.getMarketPriceByExchangePriority(target, source, exchanges);
         if (p2 != null) {
             final BigDecimal price = BigDecimal.ONE.divide(p2.getPrice(), MAX_PRICE_SCALE, RoundingMode.DOWN);
             return ProcessingPrice.builder()
@@ -134,17 +132,18 @@ public class CurrencyConverterImpl implements CurrencyConverter {
         return null;
     }
 
-    private MarketPrice getMarketPriceByExchangePriority(String symbol, List<String> exchanges) {
-        Map<String, MarketPrice> map = prices.get(symbol);
-        if (CollectionUtils.isEmpty(map)) {
-            return null;
-        }
-        for (String exchange : exchanges) {
-            if (map.containsKey(exchange)) {
-                return map.get(exchange);
-            }
-        }
-        return map.values().stream().iterator().next();
-    }
+//    private MarketPrice getMarketPriceByExchangePriority(String base, String quote, List<String> exchanges) {
+//        final String symbol = (base + "_" + quote).toLowerCase();
+//        Map<String, MarketPrice> map = prices.get(symbol);
+//        if (CollectionUtils.isEmpty(map)) {
+//            return null;
+//        }
+//        for (String exchange : exchanges) {
+//            if (map.containsKey(exchange)) {
+//                return map.get(exchange);
+//            }
+//        }
+//        return map.values().stream().iterator().next();
+//    }
 
 }

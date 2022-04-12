@@ -7,17 +7,22 @@ import io.github.qyvlik.formula.common.properties.FormulaProperties;
 import io.github.qyvlik.formula.common.utils.ServletUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Map;
 
 @Service
 public class OpenAccessInterceptor implements HandlerInterceptor {
 
     @Autowired
     private FormulaProperties formulaProperties;
+
+    @Value("#{${auth.tokens}}")
+    private Map<String, String> authTokens;
 
     @Override
     public boolean preHandle(HttpServletRequest httpServletRequest,

@@ -6,11 +6,10 @@ spring:
     port: 6379
     database: 0
     password:
-    jedis:
-      pool:
-        max-active: 256
-        min-idle: 1
     timeout: 30s
+
+redis:
+  prefix: formula/dev/
 
 formula:
   variable-type: redis
