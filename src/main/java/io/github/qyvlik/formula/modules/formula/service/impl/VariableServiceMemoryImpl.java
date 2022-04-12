@@ -20,16 +20,14 @@ public class VariableServiceMemoryImpl implements VariableService {
 
     }
 
-    public CalculateVariable getVariableValue(String variableName) {
-        MarketPrice marketPrice = dataMarketPrice.get(variableName);
-        if (marketPrice == null) {
+    public MarketPrice getVariableValue(String variableName) {
+        MarketPrice originMarketPrice = dataMarketPrice.get(variableName);
+        if (originMarketPrice == null) {
             return null;
         }
-        CalculateVariable calculateVariable = new CalculateVariable();
-        calculateVariable.setName(variableName);
-        calculateVariable.setMarket(marketPrice);
-        calculateVariable.setValue(marketPrice.getPrice());
-        return calculateVariable;
+        MarketPrice marketPrice = new MarketPrice();
+        BeanUtils.copyProperties(originMarketPrice, marketPrice);
+        return marketPrice;
     }
 
     @Override

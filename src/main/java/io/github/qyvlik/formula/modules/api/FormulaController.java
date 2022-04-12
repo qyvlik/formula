@@ -7,12 +7,9 @@ import io.github.qyvlik.formula.modules.api.req.CalculateFormulaReq;
 import io.github.qyvlik.formula.modules.api.req.CurrencyConvertReq;
 import io.github.qyvlik.formula.modules.api.req.UpdateMarketPriceReq;
 import io.github.qyvlik.formula.modules.formula.cmd.CurrencyConvertCmd;
-import io.github.qyvlik.formula.modules.formula.model.CalculateContext;
-import io.github.qyvlik.formula.modules.formula.model.CalculateResultData;
-import io.github.qyvlik.formula.modules.formula.model.CurrencyConvertResultData;
-import io.github.qyvlik.formula.modules.formula.model.MarketPrice;
-import io.github.qyvlik.formula.modules.formula.service.CurrencyConverter;
+import io.github.qyvlik.formula.modules.formula.model.*;
 import io.github.qyvlik.formula.modules.formula.service.VariableService;
+import io.github.qyvlik.formula.modules.formula.service.impl.CurrencyConverter;
 import io.github.qyvlik.formula.modules.formula.service.impl.FormulaCalculator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -21,7 +18,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
-import java.util.List;
 
 @Slf4j
 @RestController
@@ -29,10 +25,8 @@ public class FormulaController {
 
     @Autowired
     private VariableService variableService;
-    @Autowired
-    private CurrencyConverter currencyConverter;
 
-    @PostMapping(value = "api/v1/formula/market-price/update")
+    @PostMapping(value = "api/v1/formula/variable/market-price/update")
     public Result<Long> updateMarketPrice(@RequestBody UpdateMarketPriceReq req) {
         MarketPrice marketPrice = new MarketPrice();
         BeanUtils.copyProperties(req, marketPrice);
@@ -40,12 +34,7 @@ public class FormulaController {
         return Result.success(null);
     }
 
-    @GetMapping(value = "api/v1/formula/market-price/list")
-    public Result<List<MarketPrice>> getMarketPriceList() {
-        return null;
-    }
-
-    @GetMapping(value = "api/v1/formula/market-price/info")
+    @GetMapping(value = "api/v1/formula/variable/market-price/info")
     public Result<MarketPrice> getMarketPriceInfo(@RequestParam @NotBlank @Size(max = 64) String exchange,
                                                   @RequestParam @NotBlank @Size(max = 64) String base,
                                                   @RequestParam @NotBlank @Size(max = 64) String quote) {
@@ -71,7 +60,11 @@ public class FormulaController {
         BeanUtils.copyProperties(req, cmd);
         cmd.setMiddles(req.getMiddles());
         cmd.setExchanges(req.getExchanges());
-        CurrencyConvertResultData resultData = currencyConverter.currencyConvert(cmd);
+        CurrencyConverter currencyConverter = new CurrencyConverter();
+
+        CurrencyConvertContext context = new CurrencyConvertContext(variableService, req.getScale());
+
+        CurrencyConvertResultData resultData = currencyConverter.currencyConvert(cmd, context);
         if (resultData.getResult() == null) {
             return Result.failure(Code.NOT_FOUND);
         }

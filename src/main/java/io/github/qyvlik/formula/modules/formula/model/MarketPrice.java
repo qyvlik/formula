@@ -15,10 +15,6 @@ public class MarketPrice {
      */
     private String code;
     /**
-     * 交易对
-     */
-    private String symbol;
-    /**
      * 基础币种
      */
     private String base;

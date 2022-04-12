@@ -27,18 +27,13 @@ public class VariableServiceRedisImpl implements VariableService {
         this.redisPrefix = redisPrefix;
     }
 
-    public CalculateVariable getVariableValue(String variableName) {
+    public MarketPrice getVariableValue(String variableName) {
         final String fullDataKey = redisPrefix + DATA_MARKET_PRICE + variableName;
         String val = stringRedisTemplate.opsForValue().get(fullDataKey);
         if (StringUtils.isBlank(val)) {
             return null;
         }
-        MarketPrice marketPrice = JSON.parseObject(val, MarketPrice.class);
-        CalculateVariable calculateVariable = new CalculateVariable();
-        calculateVariable.setName(variableName);
-        calculateVariable.setMarket(marketPrice);
-        calculateVariable.setValue(marketPrice.getPrice());
-        return calculateVariable;
+        return JSON.parseObject(val, MarketPrice.class);
     }
 
     @Override

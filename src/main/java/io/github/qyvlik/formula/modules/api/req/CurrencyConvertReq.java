@@ -31,6 +31,7 @@ public class CurrencyConvertReq {
     /**
      * 保留精度
      */
+    @Max(18)
     private Integer scale;
     /**
      * 优先级-中间币种

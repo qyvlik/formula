@@ -2,35 +2,13 @@ package io.github.qyvlik.formula.modules.formula.service.impl;
 
 import io.github.qyvlik.formula.modules.formula.model.CalculateContext;
 import io.github.qyvlik.formula.modules.formula.model.CalculateResultData;
-import io.github.qyvlik.formula.modules.formula.model.CalculateVariable;
-import io.github.qyvlik.formula.modules.formula.model.MarketPrice;
 import io.github.qyvlik.formula.modules.formula.service.VariableService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
-import java.math.BigDecimal;
-import java.util.List;
-
 @Slf4j
 class FormulaCalculatorTest {
-    private final VariableService variableService = new VariableService() {
-        @Override
-        public CalculateVariable getVariableValue(String variable) {
-            CalculateVariable calculateVariable = new CalculateVariable();
-            calculateVariable.setValue(BigDecimal.ONE);
-            return calculateVariable;
-        }
-
-        @Override
-        public MarketPrice getMarketPriceByExchangePriority(String base, String quote, List<String> exchanges) {
-            return null;
-        }
-
-        @Override
-        public void updateMarketPrice(MarketPrice marketPrice) {
-
-        }
-    };
+    private final VariableService variableService = new VariableServiceMemoryImpl();
 
     @Test
     public void testBlank() {

@@ -25,13 +25,6 @@ public class UpdateMarketPriceReq {
     @Size(max = 128)
     private String code;
     /**
-     * 交易对
-     */
-    @NotBlank
-    @NotNull
-    @Size(max = 128)
-    private String symbol;
-    /**
      * 基础币种
      */
     @NotBlank
