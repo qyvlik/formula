@@ -1,9 +1,6 @@
 # formula
 
-Update variable, and use javascript engine calculate the result. 
-
-For example, regularly update the variables `fiat_usd_cny` and `huobipro_usdt_btc`, 
-and calculate `huobipro_usdt_btc*fiat_usd_cny`, you can get the bitcoin CNY price.
+Update variable, and use [EvalEx](https://github.com/uklimaschewski/EvalEx) calculate the result.
 
 > **Use the [~~qyvlik/formula-data~~](https://github.com/qyvlik/formula-data) to regularly update the variables.**
 
@@ -15,9 +12,11 @@ and calculate `huobipro_usdt_btc*fiat_usd_cny`, you can get the bitcoin CNY pric
 
 ## api
 
+`TOKEN` header config key is `auth.tokens`, see in [application-prod.yml](./src/main/resources/application-prod.yml).
+
 ### update variables
 
-Update variables, `token` header config key is `formula.access-tokens`, was in `application.yml` file
+Update variables
 
 ```bash
 curl --location --request POST 'http://127.0.0.1:8120/api/v1/formula/variable/market-price/update' \
@@ -33,7 +32,7 @@ curl --location --request POST 'http://127.0.0.1:8120/api/v1/formula/variable/ma
 }'
 ```
 
-response
+response:
 
 ```json
 {
@@ -76,7 +75,7 @@ response:
 
 Calculate the formula, such as `okex_btc_usdt*1.101`.
 
-**Make sure, you have regularly update the `huobipro_usdt_btc`.**
+**Make sure, you have regularly update the `okex_btc_usdt`.**
 
 ```bash
 curl --location --request POST 'http://127.0.0.1:8120/api/v1/formula/calculate' \
@@ -159,3 +158,7 @@ curl --location --request POST 'http://127.0.0.1:8120/api/v1/formula/convert' \
   "success": true
 }
 ```
+
+## benchmark
+
+See [benchmark](./docs/benchmark.md).
