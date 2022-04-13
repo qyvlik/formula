@@ -1,4 +1,4 @@
-package io.github.qyvlik.formula.common.interceptor;
+package io.github.qyvlik.formula.common.web.interceptor;
 
 import com.google.common.collect.Lists;
 import io.github.qyvlik.formula.common.base.AppException;

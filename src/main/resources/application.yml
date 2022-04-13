@@ -5,5 +5,12 @@ server:
 spring:
   profiles:
     active: dev
+  web:
+    locale: zh_CN
+    locale-resolver: accept_header
+  messages:
+    basename: i18n/messages/messages
+    use-code-as-default-message: false
+    encoding: UTF-8
   mvc:
     log-resolved-exception: false

@@ -8,6 +8,7 @@ import io.github.qyvlik.formula.common.base.Code;
 import io.github.qyvlik.formula.modules.formula.model.CalculateContext;
 import io.github.qyvlik.formula.modules.formula.model.CalculateResultData;
 import io.github.qyvlik.formula.modules.formula.model.CalculateVariable;
+import io.github.qyvlik.formula.modules.formula.model.ErrCode;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
@@ -39,7 +40,7 @@ public class FormulaCalculator {
         for (String variableName : variableNameSet) {
             CalculateVariable variable = context.getVariableValue(variableName);
             if (variable == null) {
-                throw AppException.create(Code.ILLEGAL_PARAM, "variable " + variableName + " not exist");
+                throw AppException.create(ErrCode.CALCULATE_VARIABLE_NOT_FOUND, "variable " + variableName + " not exist");
             }
             expression.with(variableName, variable.getValue());
             variables.add(variable);
@@ -50,7 +51,7 @@ public class FormulaCalculator {
         try {
             result = expression.eval(false);
         } catch (Exception e) {
-            throw AppException.create(Code.ILLEGAL_PARAM, e);
+            throw AppException.create(ErrCode.CALCULATE_EVAL_FAILURE, e);
         }
 
         CalculateResultData resultData = new CalculateResultData();

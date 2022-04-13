@@ -23,4 +23,4 @@ formula:
 
 logging:
   level:
-    io.github.qyvlik.formula.common.interceptor.AppExceptionHandler: ERROR
+    io.github.qyvlik.formula.common.web.interceptor.AppExceptionHandler: ERROR

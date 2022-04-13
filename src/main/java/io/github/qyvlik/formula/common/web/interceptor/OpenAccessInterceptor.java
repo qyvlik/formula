@@ -1,9 +1,11 @@
-package io.github.qyvlik.formula.common.interceptor;
+package io.github.qyvlik.formula.common.web.interceptor;
 
 import com.alibaba.fastjson.JSON;
 import io.github.qyvlik.formula.common.base.Code;
 import io.github.qyvlik.formula.common.base.Result;
 import io.github.qyvlik.formula.common.utils.ServletUtils;
+import io.github.qyvlik.formula.common.web.ctx.AuthToken;
+import io.github.qyvlik.formula.common.web.ctx.OpenAccessCtx;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.lang.Nullable;
@@ -12,7 +14,6 @@ import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.List;
 import java.util.Map;
 
 @Service

@@ -1,4 +1,4 @@
-package io.github.qyvlik.formula.common.interceptor;
+package io.github.qyvlik.formula.common.web.ctx;
 
 import lombok.Data;
 

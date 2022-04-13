@@ -44,7 +44,7 @@ public class FormulaController {
         if (marketPrice != null) {
             return Result.success(marketPrice);
         }
-        return Result.failure(Code.NOT_FOUND);
+        return Result.failure(ErrCode.VARIABLE_NOT_FOUND);
     }
 
     @PostMapping(value = "api/v1/formula/calculate")
@@ -67,7 +67,7 @@ public class FormulaController {
 
         CurrencyConvertResultData resultData = currencyConverter.currencyConvert(cmd, context);
         if (resultData.getResult() == null) {
-            return Result.failure(Code.NOT_FOUND);
+            return Result.failure(ErrCode.CURRENCY_CONVERT_FAILURE);
         }
         return Result.success(resultData);
     }
