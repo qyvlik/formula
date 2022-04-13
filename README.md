@@ -14,6 +14,8 @@ Update variable, and use [EvalEx](https://github.com/uklimaschewski/EvalEx) calc
 
 `TOKEN` header config key is `auth.tokens`, see in [application-prod.yml](./src/main/resources/application-prod.yml).
 
+You can import [formula.postman_collection.json](./docs/formula.postman_collection.json) in [Postman](https://www.postman.com/).
+
 ### update variables
 
 Update variables

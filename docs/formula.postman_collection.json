@@ -1,0 +1,213 @@
+{
+	"info": {
+		"_postman_id": "d3901851-8e1c-4f24-9eec-82b1466dc751",
+		"name": "formula",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "/",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:8120/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8120",
+					"path": [
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/api/v1/formula/variable/market-price/update",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "TOKEN",
+						"value": "ad82c6ae-f7a3-486b-b933-aa19104d8142",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"exchange\": \"okex\",\n    \"code\": \"btc_usdt\",\n    \"base\": \"btc\",\n    \"quote\": \"usdt\",\n    \"price\": \"100\",\n    \"timestamp\": 0\n}"
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8120/api/v1/formula/variable/market-price/update",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8120",
+					"path": [
+						"api",
+						"v1",
+						"formula",
+						"variable",
+						"market-price",
+						"update"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/api/v1/formula/market-price/variable/info",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "TOKEN",
+						"value": "ad82c6ae-f7a3-486b-b933-aa19104d8142",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8120/api/v1/formula/variable/market-price/info?exchange=okex&base=btc&quote=usdt",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8120",
+					"path": [
+						"api",
+						"v1",
+						"formula",
+						"variable",
+						"market-price",
+						"info"
+					],
+					"query": [
+						{
+							"key": "exchange",
+							"value": "okex"
+						},
+						{
+							"key": "base",
+							"value": "btc"
+						},
+						{
+							"key": "quote",
+							"value": "usdt"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/api/v1/formula/calculate",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "TOKEN",
+						"value": "ad82c6ae-f7a3-486b-b933-aa19104d8142",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"formula\": \"okex_btc_usdt*1.101\"\n}"
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8120/api/v1/formula/calculate",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8120",
+					"path": [
+						"api",
+						"v1",
+						"formula",
+						"calculate"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/api/v1/formula/convert",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "TOKEN",
+						"value": "ad82c6ae-f7a3-486b-b933-aa19104d8142",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Accept-Language",
+						"value": "zh-CN",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"source\": \"btc\",\n    \"target\": \"usdt\",\n    \"amount\": \"0.99\",\n    \"scale\": 18,\n    \"middles\": [\"btc\", \"usdt\"],\n    \"exchanges\": [\"okex\"]\n}"
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8120/api/v1/formula/convert",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8120",
+					"path": [
+						"api",
+						"v1",
+						"formula",
+						"convert"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
