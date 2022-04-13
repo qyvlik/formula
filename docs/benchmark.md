@@ -58,7 +58,20 @@ wrk -t8 -c256 -d120s --latency --script=post-calculate.lua http://127.0.0.1:8120
 ```
 
 ```text
-
+Running 2m test @ http://127.0.0.1:8120/api/v1/formula/calculate
+  8 threads and 256 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency    28.00ms   13.02ms 310.82ms   89.53%
+    Req/Sec     1.17k   280.89     2.81k    70.40%
+  Latency Distribution
+     50%   26.07ms
+     75%   30.43ms
+     90%   37.47ms
+     99%   76.04ms
+  1118960 requests in 2.00m, 434.52MB read
+  Socket errors: connect 0, read 336, write 2, timeout 0
+Requests/sec:   9317.43
+Transfer/sec:      3.62MB
 ```
 
 ### convert
@@ -68,6 +81,20 @@ wrk -t8 -c256 -d120s --latency --script=post-convert.lua http://127.0.0.1:8120/a
 ```
 
 ```text
+Running 2m test @ http://127.0.0.1:8120/api/v1/formula/convert
+  8 threads and 256 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency    24.86ms   16.52ms 657.68ms   98.04%
+    Req/Sec     1.32k   203.70     1.91k    68.07%
+  Latency Distribution
+     50%   24.22ms
+     75%   27.12ms
+     90%   30.81ms
+     99%   50.56ms
+  1263382 requests in 2.00m, 529.16MB read
+  Socket errors: connect 0, read 195, write 2, timeout 0
+Requests/sec:  10523.35
+Transfer/sec:      4.41MB
 ```
 
 [wg/wrk](https://github.com/wg/wrk)
