@@ -16,6 +16,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
@@ -27,7 +28,7 @@ public class FormulaController {
     private VariableService variableService;
 
     @PostMapping(value = "api/v1/formula/variable/market-price/update")
-    public Result<Long> updateMarketPrice(@RequestBody UpdateMarketPriceReq req) {
+    public Result<Long> updateMarketPrice(@Valid @RequestBody UpdateMarketPriceReq req) {
         MarketPrice marketPrice = new MarketPrice();
         BeanUtils.copyProperties(req, marketPrice);
         variableService.updateMarketPrice(marketPrice);
@@ -35,9 +36,9 @@ public class FormulaController {
     }
 
     @GetMapping(value = "api/v1/formula/variable/market-price/info")
-    public Result<MarketPrice> getMarketPriceInfo(@RequestParam @NotBlank @Size(max = 64) String exchange,
-                                                  @RequestParam @NotBlank @Size(max = 64) String base,
-                                                  @RequestParam @NotBlank @Size(max = 64) String quote) {
+    public Result<MarketPrice> getMarketPriceInfo(@Valid @RequestParam @NotBlank @Size(max = 64) String exchange,
+                                                  @Valid @RequestParam @NotBlank @Size(max = 64) String base,
+                                                  @Valid @RequestParam @NotBlank @Size(max = 64) String quote) {
         MarketPrice marketPrice = variableService.getMarketPriceByExchangePriority(
                 base, quote, Lists.newArrayList(exchange));
         if (marketPrice != null) {
@@ -47,7 +48,7 @@ public class FormulaController {
     }
 
     @PostMapping(value = "api/v1/formula/calculate")
-    public Result<CalculateResultData> formulaCalculate(@RequestBody CalculateFormulaReq req) {
+    public Result<CalculateResultData> formulaCalculate(@Valid @RequestBody CalculateFormulaReq req) {
         FormulaCalculator calculator = new FormulaCalculator();
         CalculateContext context = new CalculateContext(variableService);
         CalculateResultData resultData = calculator.calculate(req.getFormula(), context);
@@ -55,7 +56,7 @@ public class FormulaController {
     }
 
     @PostMapping(value = "api/v1/formula/convert")
-    public Result<CurrencyConvertResultData> convert(@RequestBody CurrencyConvertReq req) {
+    public Result<CurrencyConvertResultData> convert(@Valid @RequestBody CurrencyConvertReq req) {
         CurrencyConvertCmd cmd = new CurrencyConvertCmd();
         BeanUtils.copyProperties(req, cmd);
         cmd.setMiddles(req.getMiddles());

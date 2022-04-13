@@ -5,6 +5,8 @@ server:
 spring:
   profiles:
     active: dev
+  mvc:
+    log-resolved-exception: false
 
 auth:
   tokens: '{
