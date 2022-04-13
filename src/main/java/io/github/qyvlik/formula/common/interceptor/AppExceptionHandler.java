@@ -29,8 +29,7 @@ public class AppExceptionHandler {
 
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
     public Result<?> methodArgumentNotValidException(MethodArgumentNotValidException e) {
-        final HttpServletRequest request = ServletUtils.getRequest();
-        final String uri = request != null ? request.getRequestURI() : "";
+
         final List<String> errors = Lists.newArrayList();
         for (ObjectError objectError : e.getBindingResult().getAllErrors()) {
             if (objectError instanceof FieldError) {
@@ -41,10 +40,12 @@ public class AppExceptionHandler {
         }
         final String message = String.join("\n", errors);
 
-        log.error("methodArgumentNotValidException uri:{}, error:{}", uri, e.getMessage());
+        if (log.isWarnEnabled()) {
+            final HttpServletRequest request = ServletUtils.getRequest();
+            final String uri = request != null ? request.getRequestURI() : "";
+            log.warn("methodArgumentNotValidException uri:{}, error:{}", uri, e.getMessage());
+        }
 
         return Result.failure(Code.ILLEGAL_PARAM, message);
     }
-
-
 }

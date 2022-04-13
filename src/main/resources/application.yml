@@ -7,10 +7,3 @@ spring:
     active: dev
   mvc:
     log-resolved-exception: false
-
-auth:
-  tokens: '{
-    "app1": "ad82c6ae-f7a3-486b-b933-aa19104d8142",
-    "app2": "a867fec8-cadd-4d96-91bc-3f4a85878685",
-    "app3": "64905f67-0507-4053-a918-9e691252218f"
-  }'

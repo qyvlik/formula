@@ -8,8 +8,19 @@ spring:
     password:
     timeout: 30s
 
+auth:
+  tokens: '{
+    "app1": "ad82c6ae-f7a3-486b-b933-aa19104d8142",
+    "app2": "a867fec8-cadd-4d96-91bc-3f4a85878685",
+    "app3": "64905f67-0507-4053-a918-9e691252218f"
+  }'
+
 redis:
   prefix: formula/test/
 
 formula:
   variable-type: memory
+
+logging:
+  level:
+    io.github.qyvlik.formula.common.interceptor.AppExceptionHandler: ERROR
