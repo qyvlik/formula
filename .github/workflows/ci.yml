@@ -28,3 +28,7 @@ jobs:
         with:
           push: true
           tags: qyvlik/formula:latest
+          build-args: |
+            BUILD_APP_GIT_TAG=master
+            BUILD_APP_GIT_HASH=${{ github.sha }}
+            BUILD_APP_BUILDER=${{ github.actor }}
