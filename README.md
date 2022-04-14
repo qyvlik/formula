@@ -6,9 +6,7 @@ Update variable, and use [EvalEx](https://github.com/uklimaschewski/EvalEx) calc
 
 ## docker
 
-[~~qyvlik/formula~~](https://hub.docker.com/r/qyvlik/formula)
-
-`docker-compose` see [qyvlik/formula-docker](https://github.com/qyvlik/formula-docker) 
+[qyvlik/formula](https://hub.docker.com/r/qyvlik/formula)
 
 ## api
 
