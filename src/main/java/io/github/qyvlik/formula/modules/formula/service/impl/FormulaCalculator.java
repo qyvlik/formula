@@ -4,7 +4,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.udojava.evalex.Expression;
 import io.github.qyvlik.formula.common.base.AppException;
-import io.github.qyvlik.formula.common.base.Code;
 import io.github.qyvlik.formula.modules.formula.model.CalculateContext;
 import io.github.qyvlik.formula.modules.formula.model.CalculateResultData;
 import io.github.qyvlik.formula.modules.formula.model.CalculateVariable;
