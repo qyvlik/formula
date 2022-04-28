@@ -14,19 +14,20 @@ RUN mvn -DskipTests package
 
 FROM openjdk:8-alpine
 
-ARG BUILD_APP_NAME="formula"
-ARG BUILD_APP_GIT_TAG="master"
-ARG BUILD_APP_GIT_HASH="master"
-ARG BUILD_APP_BUILDER="admin"
 ARG TIME_ZONE=Asia/Shanghai
 ARG APK_REPOSITORIES=mirrors.aliyun.com
 
-RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
+RUN sed -i "s/dl-cdn.alpinelinux.org/${APK_REPOSITORIES}/g" /etc/apk/repositories
 
 RUN apk add --update --no-cache tzdata font-adobe-100dpi ttf-dejavu fontconfig \
     && echo "${TIME_ZONE}" > /etc/timezone \
     && ln -sf /usr/share/zoneinfo/${TIME_ZONE} /etc/localtime \
     && rm -rf /var/cache/apk/*
+
+ARG BUILD_APP_NAME="formula"
+ARG BUILD_APP_GIT_TAG="master"
+ARG BUILD_APP_GIT_HASH="master"
+ARG BUILD_APP_BUILDER="qyvlik"
 
 MAINTAINER "<qyvlik@qq.com>"
 
